@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Demo" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
+    <%= hotwire_livereload_tags if Rails.env.development? %>
+  </head>
+
+  <body class="<%= "turbo-native" if turbo_native_app? %>">
+    <%= render "shared/navbar" %>
+    <main class="container">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+    <%= render "shared/footer" %>
+  </body>
+</html>

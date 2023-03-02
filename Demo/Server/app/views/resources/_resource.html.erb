@@ -1,0 +1,13 @@
+<%= link_to resource, class: "list-group-item list-group-item-action py-4" do %>
+  <div class="row align-items-top">
+    <div class="col">
+      <h2 class="fs-4 mb-1"><%= resource.title %></h2>
+      <p class="small text-muted mb-0">Created <%= time_ago_in_words resource.created_at %> ago</p>
+      <p class="mt-2 mb-0"><%= resource.description %></p>
+    </div>
+
+    <div class="col flex-grow-0 flex-shrink-1 my-auto">
+      <i class="bi bi-chevron-right"></i>
+    </div>
+  </div>
+<% end %>

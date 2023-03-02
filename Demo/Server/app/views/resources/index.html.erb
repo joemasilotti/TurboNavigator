@@ -1,0 +1,16 @@
+<% content_for :title, "Resources" %>
+
+<div class="d-turbo-native-none my-4">
+  <h1 class="display-6">Resources</h1>
+  <%= link_to "Add a resource", new_resource_path, class: "btn btn-outline-primary" %>
+</div>
+
+<% if @resources.any? %>
+  <div class="list-group list-group-flush mx-n3 sm:mx-0">
+    <%= render @resources %>
+  </div>
+<% else %>
+  <p>No resources.</p>
+<% end %>
+
+<%= link_to "Add a resource", new_resource_path, class: "d-none d-turbo-native-block btn btn-outline-primary mt-3" %>
