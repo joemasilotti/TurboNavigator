@@ -16,13 +16,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // MARK: - Private
 
     private let baseURL = URL(string: "http://localhost:3000")!
-    private let sharedProcessPool = WKProcessPool()
-    private lazy var session = makeSession()
-    private lazy var modalSession = makeSession()
+    private lazy var turboNavigationController = TurboNavigationController(navigationDelegate: self, pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
         .server(baseURL.appending(path: "/configuration"))
     ])
-    private lazy var turboNavigationController = TurboNavigationController(session: session, modalSession: modalSession)
 
     private func createWindow(in windowScene: UIWindowScene) {
         let window = UIWindow(windowScene: windowScene)
@@ -34,27 +31,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         turboNavigationController.route(baseURL)
     }
-
-    private func makeSession() -> Session {
-        let configuration = WKWebViewConfiguration()
-        configuration.applicationNameForUserAgent = "Turbo Native iOS"
-        configuration.processPool = sharedProcessPool
-
-        let session = Session(webViewConfiguration: configuration)
-        session.pathConfiguration = pathConfiguration
-        session.delegate = self
-        return session
-    }
 }
 
-extension SceneDelegate: SessionDelegate {
-    func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
-        turboNavigationController.route(proposal)
-    }
-
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
+extension SceneDelegate: TurboNavigationDelegate {
+    func session(_ session: Turbo.Session, didFailRequestForVisitable visitable: Turbo.Visitable, error: Error) {
         print("An error occurred loading a visit:", error)
     }
-
-    func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
 }

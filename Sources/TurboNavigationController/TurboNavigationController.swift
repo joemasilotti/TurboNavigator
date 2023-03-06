@@ -11,6 +11,10 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Implement to return a custom native controller to be displayed.
     /// Defaults to VisitableViewController for default Turbo Native behavior.
     func customController(for proposal: VisitProposal) -> UIViewController?
+
+    /// An error occurred loading the request, present it to the user.
+    /// Retry the request by calling `session.reload()`.
+    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
 }
 
 public extension TurboNavigationDelegate {
@@ -26,11 +30,16 @@ public extension TurboNavigationDelegate {
 /// Handles navigation to new URLs using the following rules:
 /// https://masilotti.notion.site/Turbo-Native-iOS-navigation-4fd3dc638c3e4d2cab7ec5582656cbbb
 public class TurboNavigationController: UINavigationController {
-    public init(session: Session, modalSession: Session, navigationDelegate: TurboNavigationDelegate? = nil) {
-        self.session = session
-        self.modalSession = modalSession
+    public init(navigationDelegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil) {
+        self.session = Session(webView: TurboConfig.shared.makeWebView())
+        self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
         self.navigationDelegate = navigationDelegate
         super.init(nibName: nil, bundle: nil)
+
+        session.delegate = self
+        modalSession.delegate = self
+        session.pathConfiguration = pathConfiguration
+        modalSession.pathConfiguration = pathConfiguration
     }
 
     public func route(_ url: URL) {
@@ -190,5 +199,22 @@ public class TurboNavigationController: UINavigationController {
         if let visitable = controller as? Visitable {
             session.visit(visitable, options: options)
         }
+    }
+}
+
+// MARK: - SessionDelegate
+
+extension TurboNavigationController: SessionDelegate {
+    public func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
+        route(proposal)
+    }
+
+    public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
+        // TODO: Provide a default error screen with option to provide a custom one.
+        navigationDelegate?.session(session, didFailRequestForVisitable: visitable, error: error)
+    }
+
+    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {
+        // TODO: Handle a terminated web view process or pass to the delegate.
     }
 }
