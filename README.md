@@ -221,5 +221,20 @@ extension SceneDelegate: TurboNavigationDelegate {
         return nil
     }
 }
+```
+
+You can also override the default WKWebViewConfiguration change using the following:
+
 
 ```
+extension SceneDelegate: TurboNavigationDelegate {
+  func makeWebView() -> WKWebView {
+    let sharedProcessPool = WKProcessPool()
+    let configuration = WKWebViewConfiguration()
+    configuration.applicationNameForUserAgent = "Custom User Agent"
+    configuration.processPool = sharedProcessPool
+    return WKWebView(frame: .zero, configuration: configuration)
+  }
+}
+```
+

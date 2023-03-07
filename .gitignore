@@ -1,3 +1,5 @@
 xcuserdata/
 .swiftpm
 .build/
+.DS_Store
+Demo/.DS_Store

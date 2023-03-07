@@ -15,6 +15,8 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// An error occurred loading the request, present it to the user.
     /// Retry the request by calling `session.reload()`.
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
+
+    func makeWebView() -> WKWebView
 }
 
 public extension TurboNavigationDelegate {
@@ -25,14 +27,18 @@ public extension TurboNavigationDelegate {
     func customController(for proposal: VisitProposal) -> UIViewController? {
         VisitableViewController(url: proposal.url)
     }
+
+    func makeWebView() -> WKWebView  {
+        TurboConfig.shared.makeWebView()
+    }
 }
 
 /// Handles navigation to new URLs using the following rules:
 /// https://masilotti.notion.site/Turbo-Native-iOS-navigation-4fd3dc638c3e4d2cab7ec5582656cbbb
 public class TurboNavigationController: UINavigationController {
     public init(navigationDelegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil) {
-        self.session = Session(webView: TurboConfig.shared.makeWebView())
-        self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
+        self.session = Session(webView: navigationDelegate.makeWebView())
+        self.modalSession = Session(webView: navigationDelegate.makeWebView())
         self.navigationDelegate = navigationDelegate
         super.init(nibName: nil, bundle: nil)
 
