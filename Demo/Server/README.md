@@ -1,4 +1,4 @@
-# TurboNavigationController demo server
+# Turbo Navigator demo server
 
 This Rails server accompanies the demo app for the iOS package.
 

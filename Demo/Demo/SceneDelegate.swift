@@ -1,5 +1,5 @@
 import Turbo
-import TurboNavigationController
+import TurboNavigator
 import UIKit
 import WebKit
 
