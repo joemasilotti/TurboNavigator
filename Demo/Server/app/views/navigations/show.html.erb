@@ -4,63 +4,28 @@
 <p>This is the default behavior, no custom options are required.</p>
 
 <div class="list-group list-group-flush mx-n3 sm:mx-0">
-  <%= link_to second_navigation_path, class: "list-group-item list-group-item-action d-flex py-3" do %>
-    <div class="col flex-grow-0 flex-shrink-1 my-auto ps-1 pe-4">
-      <i class="bi bi-arrow-right fs-1"></i>
-    </div>
+  <%= render "navigations/item",
+    path: second_navigation_path,
+    icon: "bi-arrow-right",
+    name: "Basic navigation",
+    description: "Push another screen on the stack." %>
 
-    <div class="w-100 mx-auto">
-      <p class="fs-5 mb-0">Basic navigation</p>
-      <p class="mb-0 text-muted">Push another screen on the stack.</p>
-    </div>
+  <%= render "navigations/item",
+    path: replace_navigation_path,
+    data: {turbo_action: :replace},
+    icon: "bi-arrow-left-right",
+    name: "Replace navigation",
+    description: "Replace this screen with a new one." %>
 
-    <div class="col flex-grow-0 flex-shrink-1 my-auto">
-      <i class="bi bi-chevron-right"></i>
-    </div>
-  <% end %>
+  <%= render "navigations/item",
+    path: turbo_recede_historical_location_path,
+    icon: "bi-arrow-left",
+    name: "Recede navigation",
+    description: "Pop this screen off the stack." %>
 
-  <%= link_to replace_navigation_path, data: {turbo_action: :replace}, class: "list-group-item list-group-item-action d-flex py-3" do %>
-    <div class="col flex-grow-0 flex-shrink-1 my-auto ps-1 pe-4">
-      <i class="bi bi-arrow-left-right fs-1"></i>
-    </div>
-
-    <div class="w-100 mx-auto">
-      <p class="fs-5 mb-0">Replace navigation</p>
-      <p class="mb-0 text-muted">Replace this screen with a new one.</p>
-    </div>
-
-    <div class="col flex-grow-0 flex-shrink-1 my-auto">
-      <i class="bi bi-chevron-right"></i>
-    </div>
-  <% end %>
-
-  <%= link_to turbo_recede_historical_location_path, class: "list-group-item list-group-item-action d-flex py-3" do %>
-    <div class="col flex-grow-0 flex-shrink-1 my-auto ps-1 pe-4">
-      <i class="bi bi-arrow-left fs-1"></i>
-    </div>
-
-    <div class="w-100 mx-auto">
-      <p class="fs-5 mb-0">Recede navigation</p>
-      <p class="mb-0 text-muted">Pop this screen off the stack.</p>
-    </div>
-
-    <div class="col flex-grow-0 flex-shrink-1 my-auto">
-      <i class="bi bi-chevron-right"></i>
-    </div>
-  <% end %>
-
-  <%= link_to "/not_found", class: "list-group-item list-group-item-action d-flex py-3" do %>
-    <div class="col flex-grow-0 flex-shrink-1 my-auto ps-1 pe-4">
-      <i class="bi bi-bug fs-1"></i>
-    </div>
-
-    <div class="w-100 mx-auto">
-      <p class="fs-5 mb-0">Error handling</p>
-      <p class="mb-0 text-muted">Visit a page that does not exist (404).</p>
-    </div>
-
-    <div class="col flex-grow-0 flex-shrink-1 my-auto">
-      <i class="bi bi-chevron-right"></i>
-    </div>
-  <% end %>
+  <%= render "navigations/item",
+    path: "/not_found",
+    icon: "bi-bug",
+    name: "Error handling",
+    description: "Visit a page that does not exist (404)." %>
 </div>
