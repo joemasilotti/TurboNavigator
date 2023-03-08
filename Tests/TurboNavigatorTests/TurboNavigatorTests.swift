@@ -5,7 +5,7 @@ import XCTest
 /// Tests are written in the following format:
 /// test_currentContext_givenContext_givenPresentation_modifiers_result()
 /// See the README for a more visually pleasing table.
-final class TurboNavigationControllerTests: XCTestCase {
+final class TurboNavigatorTests: XCTestCase {
     private var navigator: TurboNavigator!
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
