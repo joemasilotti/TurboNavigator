@@ -29,12 +29,13 @@ public extension TurboNavigationDelegate {
 
 /// Handles navigation to new URLs using the following rules:
 /// https://masilotti.notion.site/Turbo-Native-iOS-navigation-4fd3dc638c3e4d2cab7ec5582656cbbb
-public class TurboNavigationController: UINavigationController {
-    public init(navigationDelegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil) {
+public class TurboNavigator {
+    public init(delegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil, navigationController: UINavigationController = UINavigationController(), modalNavigationController: UINavigationController = UINavigationController()) {
         self.session = Session(webView: TurboConfig.shared.makeWebView())
         self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
-        self.navigationDelegate = navigationDelegate
-        super.init(nibName: nil, bundle: nil)
+        self.delegate = delegate
+        self.navigationController = navigationController
+        self.modalNavigationController = modalNavigationController
 
         session.delegate = self
         modalSession.delegate = self
@@ -42,17 +43,25 @@ public class TurboNavigationController: UINavigationController {
         modalSession.pathConfiguration = pathConfiguration
     }
 
+    public var rootViewController: UIViewController { navigationController }
+
     public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
-        let proposal = VisitProposal(url: url, options: options)
+        let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
+        let proposal = VisitProposal(url: url, options: options, properties: properties)
         route(proposal)
     }
 
     public func route(_ proposal: VisitProposal) {
-        if navigationDelegate?.shouldRoute(proposal) ?? true {
+        if delegate?.shouldRoute(proposal) ?? true {
             _route(proposal)
         }
     }
+
+    // MARK: Internal
+
+    let session: Session
+    let modalSession: Session
 
     // MARK: Private
 
@@ -61,10 +70,9 @@ public class TurboNavigationController: UINavigationController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let session: Session
-    private let modalSession: Session
-    private weak var navigationDelegate: TurboNavigationDelegate?
-    private let modalNavigationController = UINavigationController()
+    private weak var delegate: TurboNavigationDelegate?
+    private let navigationController: UINavigationController
+    private let modalNavigationController: UINavigationController
 
     private func _route(_ proposal: VisitProposal) {
         let controller = controller(for: proposal)
@@ -85,21 +93,21 @@ public class TurboNavigationController: UINavigationController {
     }
 
     private func controller(for proposal: VisitProposal) -> UIViewController {
-        navigationDelegate?.customController(for: proposal) ?? VisitableViewController(url: proposal.url)
+        delegate?.customController(for: proposal) ?? VisitableViewController(url: proposal.url)
     }
 
     private func navigate(with controller: UIViewController, via proposal: VisitProposal) {
         switch proposal.context {
         case .default:
-            presentedViewController?.dismiss(animated: true)
-            pushOrReplace(on: self, with: controller, via: proposal)
+            navigationController.dismiss(animated: true)
+            pushOrReplace(on: navigationController, with: controller, via: proposal)
             visit(controller, on: session, with: proposal.options)
         case .modal:
-            if presentedViewController != nil {
+            if navigationController.presentedViewController != nil {
                 pushOrReplace(on: modalNavigationController, with: controller, via: proposal)
             } else {
                 modalNavigationController.setViewControllers([controller], animated: false)
-                present(modalNavigationController, animated: true)
+                navigationController.present(modalNavigationController, animated: true)
             }
             visit(controller, on: modalSession, with: proposal.options)
         }
@@ -137,58 +145,58 @@ public class TurboNavigationController: UINavigationController {
     }
 
     private func pop() {
-        if presentedViewController != nil {
+        if navigationController.presentedViewController != nil {
             if modalNavigationController.viewControllers.count == 1 {
-                presentedViewController?.dismiss(animated: true)
+                navigationController.dismiss(animated: true)
             } else {
                 modalNavigationController.popViewController(animated: true)
             }
         } else {
-            popViewController(animated: true)
+            navigationController.popViewController(animated: true)
         }
     }
 
     private func replace(with controller: UIViewController, via proposal: VisitProposal) {
         switch proposal.context {
         case .default:
-            presentedViewController?.dismiss(animated: true)
-            replaceLastViewController(with: controller)
+            navigationController.dismiss(animated: true)
+            navigationController.replaceLastViewController(with: controller)
             visit(controller, on: session, with: proposal.options)
         case .modal:
-            if presentedViewController != nil {
+            if navigationController.presentedViewController != nil {
                 modalNavigationController.replaceLastViewController(with: controller)
             } else {
                 modalNavigationController.setViewControllers([controller], animated: false)
-                present(modalNavigationController, animated: true)
+                navigationController.present(modalNavigationController, animated: true)
             }
             visit(controller, on: modalSession, with: proposal.options)
         }
     }
 
     private func refresh() {
-        if presentedViewController != nil {
+        if navigationController.presentedViewController != nil {
             if modalNavigationController.viewControllers.count == 1 {
-                presentedViewController?.dismiss(animated: true)
+                navigationController.dismiss(animated: true)
                 session.reload()
             } else {
                 modalNavigationController.popViewController(animated: true)
                 modalSession.reload()
             }
         } else {
-            popViewController(animated: true)
+            navigationController.popViewController(animated: true)
             session.reload()
         }
     }
 
     private func clearAll() {
-        presentedViewController?.dismiss(animated: true)
-        popToRootViewController(animated: true)
+        navigationController.dismiss(animated: true)
+        navigationController.popToRootViewController(animated: true)
         session.reload()
     }
 
     private func replaceRoot(with controller: UIViewController) {
-        presentedViewController?.dismiss(animated: true)
-        setViewControllers([controller], animated: true)
+        navigationController.dismiss(animated: true)
+        navigationController.setViewControllers([controller], animated: true)
 
         if let visitable = controller as? Visitable {
             session.visit(visitable, action: .replace)
@@ -204,17 +212,14 @@ public class TurboNavigationController: UINavigationController {
 
 // MARK: - SessionDelegate
 
-extension TurboNavigationController: SessionDelegate {
+extension TurboNavigator: SessionDelegate {
     public func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
         route(proposal)
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        // TODO: Provide a default error screen with option to provide a custom one.
-        navigationDelegate?.session(session, didFailRequestForVisitable: visitable, error: error)
+        delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
     }
 
-    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {
-        // TODO: Handle a terminated web view process or pass to the delegate.
-    }
+    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
 }

@@ -1,4 +1,3 @@
-import Turbo
 import WebKit
 
 public class TurboConfig {

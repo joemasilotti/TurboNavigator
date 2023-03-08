@@ -1,5 +1,5 @@
 import Turbo
-import TurboNavigationController
+import TurboNavigator
 import UIKit
 import WebKit
 
@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // MARK: - Private
 
     private let baseURL = URL(string: "http://localhost:3000")!
-    private lazy var turboNavigationController = TurboNavigationController(navigationDelegate: self, pathConfiguration: pathConfiguration)
+    private lazy var turboNavigator = TurboNavigator(delegate: self, pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
         .server(baseURL.appending(path: "/configuration"))
     ])
@@ -27,9 +27,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
 
         window.makeKeyAndVisible()
-        window.rootViewController = turboNavigationController
+        window.rootViewController = turboNavigator.rootViewController
 
-        turboNavigationController.route(baseURL)
+        turboNavigator.route(baseURL)
     }
 }
 

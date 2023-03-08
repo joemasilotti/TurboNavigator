@@ -1,6 +1,6 @@
-# TurboNavigationController
+# Turbo Navigator
 
-A drop-in controller for [Turbo Native](https://github.com/hotwired/turbo-ios) apps to handle common navigation flows.
+A drop-in class for [Turbo Native](https://github.com/hotwired/turbo-ios) apps to handle common navigation flows.
 
 > Note: This package is still being actively developed and subject to breaking changes without warning.
 
@@ -12,7 +12,7 @@ Turbo Native apps require a fair amount of navigation handling to create a decen
 
 Unfortunately, not much of this is built into turbo-ios. A lot of boilerplate is required to have anything more than basic pushing/popping of screens.
 
-This package abstracts that boilerplate into a single navigation controller. You can drop it into your app and not worry about handling every flow manually.
+This package abstracts that boilerplate into a single class. You can drop it into your app and not worry about handling every flow manually.
 
 I've been using something a version of this on the [dozens of Turbo Native apps](https://masilotti.com/services/) I've built over the years.
 
@@ -179,9 +179,9 @@ To hook into the "refresh" [turbo-rails native route](https://github.com/hotwire
 
 ## Getting started
 
-Check out the Demo app for an example on how to use `TurboNavigationController`.
+Check out the Demo app for an example on how to use Turbo Navigator.
 
-More detailed instructions are coming soon. [PRs are welcome](https://github.com/joemasilotti/TurboNavigationController/issues/1)!
+More detailed instructions are coming soon. [PRs are welcome](https://github.com/joemasilotti/TurboNavigator/issues/1)!
 
 ## Demo project
 
@@ -191,21 +191,17 @@ It shows off most of the navigation flows outlined above. There is also an examp
 
 ## Custom overrides
 
-You can also pass an optional delegate to `TurboNavigationController` to handle custom routing.
+You can also pass an optional delegate to `TurboNavigator` to handle custom routing.
 
 This is useful to break out of the default behavior and/or render a native screen.
 
 ```swift
-class SceneDelegate {
-  let turboNavigationController = TurboNavigationController(session: session, modalSession, modalSession, delegate: self)
+class MyCustomClass: TurboNavigationDelegate {
+    let navigator = TurboNavigator(delegate: self)
 
-  // ...
-}
-
-extension SceneDelegate: TurboNavigationDelegate {
     func shouldRoute(_ proposal: VisitProposal) -> Bool {
         if proposal.url.path.last == "sign_in" {
-            // TurboNavigationController stop processing the request.
+            // Tell Turbo Navigator stop processing the request.
             // Do something entirely custom with this link click.
             return false
         }
@@ -214,12 +210,11 @@ extension SceneDelegate: TurboNavigationDelegate {
 
     func customController(for proposal: VisitProposal) -> UIViewController? {
         if proposal.url.path.last == "numbers" {
-            // Let TurboNavigationController route this custom controller.
+            // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
         }
-        // Default behavior - TurboNavigationController routes a VisitableViewController.
+        // Default behavior - Turbo Navigator routes a VisitableViewController.
         return nil
     }
 }
-
 ```

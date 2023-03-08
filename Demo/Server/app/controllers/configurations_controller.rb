@@ -34,7 +34,7 @@ class ConfigurationsController < ApplicationController
           patterns: [
             "/new$",
             "/edit$",
-            "/modal$"
+            "/modal"
           ],
           properties: {
             context: "modal"
