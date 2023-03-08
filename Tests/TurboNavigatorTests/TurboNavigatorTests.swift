@@ -6,11 +6,6 @@ import XCTest
 /// test_currentContext_givenContext_givenPresentation_modifiers_result()
 /// See the README for a more visually pleasing table.
 final class TurboNavigatorTests: XCTestCase {
-    private var navigator: TurboNavigator!
-    private var navigationController: TestableNavigationController!
-    private var modalNavigationController: TestableNavigationController!
-    private let window = UIWindow()
-
     override func setUp() {
         navigationController = TestableNavigationController()
         modalNavigationController = TestableNavigationController()
@@ -215,6 +210,11 @@ final class TurboNavigatorTests: XCTestCase {
     private enum Context {
         case main, modal
     }
+
+    private var navigator: TurboNavigator!
+    private var navigationController: TestableNavigationController!
+    private var modalNavigationController: TestableNavigationController!
+    private let window = UIWindow()
 
     // Set an initial controller to simulate a populated navigation stack.
     private func pushInitialViewControllersOnNavigationController() {
