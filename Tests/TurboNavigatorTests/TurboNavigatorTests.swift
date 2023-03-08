@@ -30,17 +30,22 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
 
-        navigator.route(VisitProposal(path: "/two"))
+        let proposal = VisitProposal(path: "/two")
+        navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 3)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_default_default_default_visitingSamePage_replacesOnMainStack() {
         navigator.route(VisitProposal(path: "/one"))
         XCTAssertEqual(navigationController.viewControllers.count, 2)
 
-        navigator.route(VisitProposal(path: "/one"))
+        let proposal = VisitProposal(path: "/one")
+        navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_default_default_default_visitingPreviousPage_popsAndVisitsOnMainStack() {
@@ -50,85 +55,111 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(VisitProposal(path: "/two"))
         XCTAssertEqual(navigationController.viewControllers.count, 3)
 
-        navigator.route(VisitProposal(path: "/one"))
+        let proposal = VisitProposal(path: "/one")
+        navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_default_default_default_replaceAction_replacesOnMainStack() {
-        navigator.route(VisitProposal(action: .replace))
+        let proposal = VisitProposal(action: .replace)
+        navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_default_default_replace_replacesOnMainStack() {
         navigationController.pushViewController(UIViewController(), animated: false)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
 
-        navigator.route(VisitProposal(presentation: .replace))
+        let proposal = VisitProposal(presentation: .replace)
+        navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_default_modal_default_presentsModal() {
-        navigator.route(VisitProposal(context: .modal))
+        let proposal = VisitProposal(context: .modal)
+        navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
-        XCTAssert(navigationController.presentedViewController === modalNavigationController)
+        XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
         XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .modal)
     }
 
     func test_default_modal_replace_presentsModal() {
-        navigator.route(VisitProposal(context: .modal, presentation: .replace))
+        let proposal = VisitProposal(context: .modal, presentation: .replace)
+        navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
-        XCTAssert(navigationController.presentedViewController === modalNavigationController)
+        XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
         XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .modal)
     }
 
     func test_modal_default_default_dismissesModalThenPushesOnMainStack() {
         navigator.route(VisitProposal(context: .modal))
-        XCTAssert(navigationController.presentedViewController === modalNavigationController)
+        XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
 
-        navigator.route(VisitProposal())
+        let proposal = VisitProposal()
+        navigator.route(proposal)
         XCTAssert(navigationController.dismissWasCalled)
+        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_modal_default_replace_dismissesModalThenReplacedOnMainStack() {
         navigator.route(VisitProposal(context: .modal))
-        XCTAssert(navigationController.presentedViewController === modalNavigationController)
+        XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
 
-        navigator.route(VisitProposal(presentation: .replace))
+        let proposal = VisitProposal(presentation: .replace)
+        navigator.route(proposal)
         XCTAssert(navigationController.dismissWasCalled)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
+        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .main)
     }
 
     func test_modal_modal_default_pushesOnModalStack() {
         navigator.route(VisitProposal(path: "/one", context: .modal))
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
 
-        navigator.route(VisitProposal(path: "/two", context: .modal))
+        let proposal = VisitProposal(path: "/two", context: .modal)
+        navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 2)
+        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .modal)
     }
 
     func test_modal_modal_default_replaceAction_pushesOnModalStack() {
         navigator.route(VisitProposal(path: "/one", context: .modal))
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
 
-        navigator.route(VisitProposal(path: "/two", action: .replace, context: .modal))
+        let proposal = VisitProposal(path: "/two", action: .replace, context: .modal)
+        navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
+        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .modal)
     }
 
     func test_modal_modal_replace_pushesOnModalStack() {
         navigator.route(VisitProposal(path: "/one", context: .modal))
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
 
-        navigator.route(VisitProposal(path: "/two", context: .modal, presentation: .replace))
+        let proposal = VisitProposal(path: "/two", context: .modal, presentation: .replace)
+        navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
+        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        assertVisited(url: proposal.url, on: .modal)
     }
 
     func test_default_any_pop_popsOffMainStack() {
@@ -162,12 +193,13 @@ final class TurboNavigatorTests: XCTestCase {
         navigationController.viewControllers = [rootController, UIViewController(), UIViewController()]
         XCTAssertEqual(navigationController.viewControllers.count, 3)
 
-        navigator.route(VisitProposal(presentation: .clearAll))
+        let proposal = VisitProposal(presentation: .clearAll)
+        navigator.route(proposal)
         XCTAssertTrue(navigationController.dismissWasCalled)
         XCTAssertEqual(navigationController.viewControllers, [rootController])
     }
 
-    func test_any_any_replaceRoot_dismissesModalThenReplacedRootOnMainStack() {
+    func test_any_any_replaceRoot_dismissesModalThenReplacesRootOnMainStack() {
         let rootController = UIViewController()
         navigationController.viewControllers = [rootController, UIViewController(), UIViewController()]
         XCTAssertEqual(navigationController.viewControllers.count, 3)
@@ -176,6 +208,12 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertTrue(navigationController.dismissWasCalled)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+    }
+
+    // MARK: Private
+
+    private enum Context {
+        case main, modal
     }
 
     // Set an initial controller to simulate a populated navigation stack.
@@ -189,6 +227,15 @@ final class TurboNavigatorTests: XCTestCase {
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
         navigationController.loadViewIfNeeded()
+    }
+
+    private func assertVisited(url: URL, on context: Context) {
+        switch context {
+        case .main:
+            XCTAssertEqual(navigator.session.activeVisitable?.visitableURL, url)
+        case .modal:
+            XCTAssertEqual(navigator.modalSession.activeVisitable?.visitableURL, url)
+        }
     }
 }
 

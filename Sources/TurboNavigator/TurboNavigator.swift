@@ -58,6 +58,11 @@ public class TurboNavigator {
         }
     }
 
+    // MARK: Internal
+
+    let session: Session
+    let modalSession: Session
+
     // MARK: Private
 
     @available(*, unavailable)
@@ -65,8 +70,6 @@ public class TurboNavigator {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let session: Session
-    private let modalSession: Session
     private weak var delegate: TurboNavigationDelegate?
     private let navigationController: UINavigationController
     private let modalNavigationController: UINavigationController
