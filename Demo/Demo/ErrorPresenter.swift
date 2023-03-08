@@ -1,4 +1,3 @@
-import Turbo
 import UIKit
 
 protocol ErrorPresenter: UIViewController {
@@ -113,4 +112,4 @@ final class ErrorViewController: UIViewController {
     }()
 }
 
-extension VisitableViewController: ErrorPresenter {}
+extension UIViewController: ErrorPresenter {}
