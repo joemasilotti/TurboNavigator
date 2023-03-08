@@ -5,6 +5,7 @@
 * Rename project to Turbo Navigator
 * Add option to pass in custom `UINavigationController` subclasses
 * Add tests to handle most of the navigation flows
+* Add error handling example to Demo project from turbo-ios
 
 ### Breaking changes
 
