@@ -189,7 +189,7 @@ The `Demo/` directory includes an iOS app and Ruby on Rails server to demo the p
 
 It shows off most of the navigation flows outlined above. There is also an example CRUD resource for more real world applications of each.
 
-## Custom overrides
+## Custom controller and routing overrides
 
 You can also implement an optional method on the `TurboNavigationDelegate` to handle custom routing.
 
@@ -203,7 +203,7 @@ class MyCustomClass: TurboNavigationDelegate {
         if proposal.url.path == "/numbers" {
             // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
-        } else if proposal.url.pathComponents.last == "cancel" {
+        } else if proposal.presentation == .clearAll {
             // Return nil to tell Turbo Navigator stop processing the request.
             return nil
         } else {
@@ -213,5 +213,35 @@ class MyCustomClass: TurboNavigationDelegate {
             return controller
         }
     }
+}
+```
+
+## Custom configuration
+
+Customize the configuration via `TurboConfig`.
+
+### Override the user agent
+
+Keep "Turbo Native" to use `turbo_native_app?` on your Rails server.
+
+```swift
+TurboConfig.shared.userAgent = "Custom (Turbo Native)"
+```
+
+### Customize the web view and web view configuration
+
+A block is used because a new instance is needed for each web view.
+
+Don't forget to set user agent and use a shared process pool on the configuration.
+
+```swift
+TurboConfig.shared.makeCustomWebView = {
+    let configuration = WKWebViewConfiguration()
+    // Customize configuration.
+
+    let webView = WKWebView(frame: .zero, configuration: configuration)
+    // Customize web view.
+
+    return webView
 }
 ```

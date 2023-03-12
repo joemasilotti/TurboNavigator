@@ -2,6 +2,7 @@
 
 ## March 12, 2023
 
+* Option to customize web view and configuration
 * `Navigation` is now public
 * Option to customize `VisitableViewController`
 

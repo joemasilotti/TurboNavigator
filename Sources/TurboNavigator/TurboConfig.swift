@@ -1,19 +1,22 @@
 import WebKit
 
 public class TurboConfig {
+    public typealias WebViewBlock = () -> WKWebView
+
     public static let shared = TurboConfig()
 
     /// Override to set a custom user agent.
     /// Include "Turbo Native" to use `turbo_native_app?` on your Rails server.
     public var userAgent = "Turbo Native iOS"
 
+    /// Optionally customize the web views used by each Turbo Session.
+    /// Ensure you return a new instance each time.
+    public var makeCustomWebView: WebViewBlock?
+
     // MARK: - Internal
 
     func makeWebView() -> WKWebView {
-        let configuration = WKWebViewConfiguration()
-        configuration.applicationNameForUserAgent = userAgent
-        configuration.processPool = sharedProcessPool
-        return WKWebView(frame: .zero, configuration: configuration)
+        makeCustomWebView?() ?? WKWebView(frame: .zero, configuration: makeWebViewConfiguration())
     }
 
     // MARK: - Private
@@ -21,4 +24,12 @@ public class TurboConfig {
     private let sharedProcessPool = WKProcessPool()
 
     private init() {}
+
+    // A method (not a property) because we need a new instance for each web view.
+    private func makeWebViewConfiguration() -> WKWebViewConfiguration {
+        let configuration = WKWebViewConfiguration()
+        configuration.applicationNameForUserAgent = userAgent
+        configuration.processPool = sharedProcessPool
+        return configuration
+    }
 }
