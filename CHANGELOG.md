@@ -2,6 +2,7 @@
 
 ## March 12, 2023
 
+* `Navigation` is now public
 * Option to customize `VisitableViewController`
 
 ### Breaking changes
