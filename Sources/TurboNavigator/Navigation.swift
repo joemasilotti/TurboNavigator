@@ -1,10 +1,10 @@
-enum Navigation {
-    enum Context: String {
+public enum Navigation {
+    public enum Context: String {
         case `default`
         case modal
     }
 
-    enum Presentation: String {
+    public enum Presentation: String {
         case `default`
         case pop
         case replace

@@ -1,7 +1,7 @@
 import Turbo
 import UIKit
 
-extension VisitProposal {
+public extension VisitProposal {
     var context: Navigation.Context {
         if let rawValue = properties["context"] as? String {
             return Navigation.Context(rawValue: rawValue) ?? .default
