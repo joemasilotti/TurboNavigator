@@ -191,7 +191,7 @@ It shows off most of the navigation flows outlined above. There is also an examp
 
 ## Custom overrides
 
-You can also pass an optional delegate to `TurboNavigator` to handle custom routing.
+You can also implement an optional method on the `TurboNavigationDelegate` to handle custom routing.
 
 This is useful to break out of the default behavior and/or render a native screen.
 
@@ -199,22 +199,19 @@ This is useful to break out of the default behavior and/or render a native scree
 class MyCustomClass: TurboNavigationDelegate {
     let navigator = TurboNavigator(delegate: self)
 
-    func shouldRoute(_ proposal: VisitProposal) -> Bool {
-        if proposal.url.path.last == "sign_in" {
-            // Tell Turbo Navigator stop processing the request.
-            // Do something entirely custom with this link click.
-            return false
-        }
-        return true
-    }
-
-    func customController(for proposal: VisitProposal) -> UIViewController? {
-        if proposal.url.path.last == "numbers" {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+        if proposal.url.path == "/numbers" {
             // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
+        } else if proposal.url.pathComponents.last == "cancel" {
+            // Return nil to tell Turbo Navigator stop processing the request.
+            return nil
+        } else {
+            // Return the given controller to continue with default behavior.
+            // Optionally customize the given controller.
+            controller.view.backgroundColor = .orange
+            return controller
         }
-        // Default behavior - Turbo Navigator routes a VisitableViewController.
-        return nil
     }
 }
 ```
