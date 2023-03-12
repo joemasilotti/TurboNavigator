@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## March 12, 2023
+
+* Option to customize `VisitableViewController`
+
+### Breaking changes
+
+* `TurboNavigationDelegate.shouldRoute(_:)` was removed
+* `TurboNavigationDelegate.customController(for:) -> UIViewController?`
+    * Renamed to `controller(_:forProposal:) -> UIViewController?`
+    * Returning `nil` now stops default navigation
+
 ## March 8, 2023
 
 * Rename project to Turbo Navigator

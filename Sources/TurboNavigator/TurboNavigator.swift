@@ -5,12 +5,9 @@ import WebKit
 /// Implement to be notified when certain navigations are performed
 /// or to render a native controller instead of a Turbo web visit.
 public protocol TurboNavigationDelegate: AnyObject {
-    /// Return false to break out of default controller management.
-    func shouldRoute(_ proposal: VisitProposal) -> Bool
-
-    /// Implement to return a custom native controller to be displayed.
-    /// Defaults to VisitableViewController for default Turbo Native behavior.
-    func customController(for proposal: VisitProposal) -> UIViewController?
+    /// Implement to override or customize the controller to be displayed.
+    /// Return `nil` to not display or route anything.
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
 
     /// An error occurred loading the request, present it to the user.
     /// Retry the request by calling `session.reload()`.
@@ -18,11 +15,7 @@ public protocol TurboNavigationDelegate: AnyObject {
 }
 
 public extension TurboNavigationDelegate {
-    func shouldRoute(_ proposal: VisitProposal) -> Bool {
-        true
-    }
-
-    func customController(for proposal: VisitProposal) -> UIViewController? {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
         VisitableViewController(url: proposal.url)
     }
 }
@@ -53,8 +46,21 @@ public class TurboNavigator {
     }
 
     public func route(_ proposal: VisitProposal) {
-        if delegate?.shouldRoute(proposal) ?? true {
-            _route(proposal)
+        guard let controller = controller(for: proposal) else { return }
+
+        switch proposal.presentation {
+        case .default:
+            navigate(with: controller, via: proposal)
+        case .pop:
+            pop()
+        case .replace:
+            replace(with: controller, via: proposal)
+        case .refresh:
+            refresh()
+        case .clearAll:
+            clearAll()
+        case .replaceRoot:
+            replaceRoot(with: controller)
         }
     }
 
@@ -74,26 +80,12 @@ public class TurboNavigator {
     private let navigationController: UINavigationController
     private let modalNavigationController: UINavigationController
 
-    private func _route(_ proposal: VisitProposal) {
-        let controller = controller(for: proposal)
-        switch proposal.presentation {
-        case .default:
-            navigate(with: controller, via: proposal)
-        case .pop:
-            pop()
-        case .replace:
-            replace(with: controller, via: proposal)
-        case .refresh:
-            refresh()
-        case .clearAll:
-            clearAll()
-        case .replaceRoot:
-            replaceRoot(with: controller)
-        }
-    }
+    private func controller(for proposal: VisitProposal) -> UIViewController? {
+        let defaultController = VisitableViewController(url: proposal.url)
+        guard let delegate = delegate else { return defaultController }
 
-    private func controller(for proposal: VisitProposal) -> UIViewController {
-        delegate?.customController(for: proposal) ?? VisitableViewController(url: proposal.url)
+        // Developer can return nil from this method to break out of navigation.
+        return delegate.controller(defaultController, forProposal: proposal)
     }
 
     private func navigate(with controller: UIViewController, via proposal: VisitProposal) {
