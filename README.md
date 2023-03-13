@@ -245,3 +245,18 @@ TurboConfig.shared.makeCustomWebView = {
     return webView
 }
 ```
+
+### Customize behavior for external URLs
+
+Turbo cannot navigate across domains because page visits are done via JavaScript. A clicked link that points to a different domain is considered external.
+
+By default, a `SFSafariViewController` is presented. This can be overridden by implementing the following delegate method.
+
+```swift
+class MyCustomClass: TurboNavigationDelegate {
+    func openExternalURL(_ url: URL, from controller: UIViewController) {
+        // Do something custom with the external URL.
+        // The controller is provided to present on top of.
+    }
+}
+```

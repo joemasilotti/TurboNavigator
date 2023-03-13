@@ -2,6 +2,7 @@
 
 ## March 12, 2023
 
+* External URLs are presented via `SFSafariViewController` but can be customized
 * Option to customize web view and configuration
 * `Navigation` is now public
 * Option to customize `VisitableViewController`
