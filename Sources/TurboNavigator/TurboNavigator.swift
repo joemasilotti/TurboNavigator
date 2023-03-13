@@ -1,3 +1,4 @@
+import SafariServices
 import Turbo
 import UIKit
 import WebKit
@@ -5,18 +6,31 @@ import WebKit
 /// Implement to be notified when certain navigations are performed
 /// or to render a native controller instead of a Turbo web visit.
 public protocol TurboNavigationDelegate: AnyObject {
-    /// Implement to override or customize the controller to be displayed.
-    /// Return `nil` to not display or route anything.
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
-
     /// An error occurred loading the request, present it to the user.
     /// Retry the request by calling `session.reload()`.
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
+
+    /// Optional. Implement to override or customize the controller to be displayed.
+    /// Return `nil` to not display or route anything.
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
+
+    /// Optional. Implement to customize handling of external URLs.
+    /// If not implemented, will present `SFSafariViewController` as a modal and load the URL.
+    func openExternalURL(_ url: URL, from controller: UIViewController)
 }
 
 public extension TurboNavigationDelegate {
     func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
         VisitableViewController(url: proposal.url)
+    }
+
+    func openExternalURL(_ url: URL, from controller: UIViewController) {
+        let safariViewController = SFSafariViewController(url: url)
+        safariViewController.modalPresentationStyle = .pageSheet
+        if #available(iOS 15.0, *) {
+            safariViewController.preferredControlTintColor = .tintColor
+        }
+        controller.present(safariViewController, animated: true)
     }
 }
 
@@ -37,6 +51,8 @@ public class TurboNavigator {
     }
 
     public var rootViewController: UIViewController { navigationController }
+    public let navigationController: UINavigationController
+    public let modalNavigationController: UINavigationController
 
     public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
@@ -77,8 +93,6 @@ public class TurboNavigator {
     }
 
     private weak var delegate: TurboNavigationDelegate?
-    private let navigationController: UINavigationController
-    private let modalNavigationController: UINavigationController
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         let defaultController = VisitableViewController(url: proposal.url)
@@ -207,6 +221,17 @@ public class TurboNavigator {
 extension TurboNavigator: SessionDelegate {
     public func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
         route(proposal)
+    }
+
+    public func sessionDidFinishFormSubmission(_ session: Session) {
+        if session == modalSession {
+            self.session.clearSnapshotCache()
+        }
+    }
+
+    public func session(_ session: Session, openExternalURL url: URL) {
+        let controller = session === modalSession ? modalNavigationController : navigationController
+        delegate?.openExternalURL(url, from: controller)
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
