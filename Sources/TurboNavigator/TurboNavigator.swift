@@ -209,6 +209,12 @@ extension TurboNavigator: SessionDelegate {
         route(proposal)
     }
 
+    public func sessionDidFinishFormSubmission(_ session: Session) {
+        if session == modalSession {
+            self.session.clearSnapshotCache()
+        }
+    }
+
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
         delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
     }
