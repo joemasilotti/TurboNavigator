@@ -37,6 +37,8 @@ public class TurboNavigator {
     }
 
     public var rootViewController: UIViewController { navigationController }
+    public let navigationController: UINavigationController
+    public let modalNavigationController: UINavigationController
 
     public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
@@ -77,8 +79,6 @@ public class TurboNavigator {
     }
 
     private weak var delegate: TurboNavigationDelegate?
-    private let navigationController: UINavigationController
-    private let modalNavigationController: UINavigationController
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         let defaultController = VisitableViewController(url: proposal.url)
