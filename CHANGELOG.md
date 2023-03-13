@@ -2,10 +2,10 @@
 
 ## March 12, 2023
 
-* External URLs are presented via `SFSafariViewController` but can be customized
-* Option to customize web view and configuration
-* `Navigation` is now public
-* Option to customize `VisitableViewController`
+* External URLs are presented via `SFSafariViewController` but can be customized [#18](https://github.com/joemasilotti/TurboNavigator/pull/18)
+* Option to customize web view and configuration [#17](https://github.com/joemasilotti/TurboNavigator/pull/17)
+* `Navigation` is now public [#16](https://github.com/joemasilotti/TurboNavigator/pull/16)
+* Option to customize `VisitableViewController` [#14](https://github.com/joemasilotti/TurboNavigator/pull/14)
 
 ### Breaking changes
 
