@@ -260,3 +260,198 @@ class MyCustomClass: TurboNavigationDelegate {
     }
 }
 ```
+
+## Cookbook
+
+- [How to add new properties to path configuration rules](#how-to-add-new-properties-to-path-configuration-rules)
+- [How to display a full-screen modal](#how-to-display-a-full-screen-modal)
+- [How to display a full-screen modal and remove the "close" button](#how-to-display-a-full-screen-modal-and-remove-the-close-button)
+
+### How to add new properties to path configuration rules
+
+Here is what a typical rule looks like:
+
+```json
+{
+  "patterns": ["/users/sign_in"],
+  "properties": {
+    "context": "modal"
+  },
+  "comment": "Present the web login screen in a modal"
+}
+```
+
+By default, the `properties` property can take the following two configuration options:
+
+- `context`
+- `presentation`
+
+The permitted values for each are defined here: [Navigation.swift](https://github.com/joemasilotti/TurboNavigator/blob/main/Sources/TurboNavigator/Navigation.swift)
+
+Let's say we wanted to use specific view controllers for certain routes. We might want to add a new `controller` property.
+
+```json
+{
+  "patterns": ["/users/sign_in"],
+  "properties": {
+    "context": "modal",
+    "controller": "new_session"
+  },
+  "comment": "Present a native authentication controller when signing in."
+}
+```
+
+Now that we added this new property to the path configuration, we should extend the `VisitProposal` struct to give it type-safe access.
+
+1. Let's start by creating a new `enum` for it.
+
+```swift
+// NavigationExtension.swift
+import TurboNavigator
+
+enum Navigation {
+    enum Controller: String {
+        case `default`
+        case newSession = "new_session"
+        case newUser = "new_user"
+        case loading
+        case signOut
+    }
+}
+```
+
+2. Then let's extend the `VisitProposal`
+
+```swift
+// VisitProposalExtension.swift
+import Turbo
+
+extension VisitProposal {
+    var controller: Navigation.Controller {
+        if let rawValue = properties["controller"] as? String {
+            return Navigation.Controller(rawValue: rawValue) ?? .default
+        }
+        return .default
+    }
+}
+```
+
+3. You can now access the new property. Here is an example:
+
+```swift
+func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+  if proposal.controller == .newSession {
+    // ... return a custom native view controller
+  }
+}
+```
+
+### How to display a full-screen modal
+
+By default, modals use "pageSheet" presentation, occupying a 3rd of the screen and allowing swipe-down dismissal. To display a full-screen modal, add an option to your path configuration and set the presentation style within the `controller` function. This function can be used to configure the modal presentation for a specific route before returning the controller.
+
+1. Add a new property to the path configuration
+
+```json
+{
+  "patterns": ["/very_long_form/new"],
+  "properties": {
+    "context": "modal",
+    "modalPresentationStyle": "full_screen"
+  },
+  "comment": "Present the very long form in a full-screen modal"
+}
+```
+
+2. Configure access to the `modalPresentationStyle` on the `VisitProposal`:
+
+```swift
+// NavigationExtension.swift
+import TurboNavigator
+
+extension Navigation {
+  enum ModalPresentationStyle: String {
+    case `default`
+    case fullScreen = "full_screen"
+  }
+}
+// VisitProposalExtension.swift
+import Turbo
+
+extension VisitProposal {
+  var modalPresentationStyle: Navigation.ModalPresentationStyle {
+    if let rawValue = properties["modalPresentationStyle"] as? String {
+      return Navigation.ModalPresentationStyle(rawValue: rawValue) ?? .default
+    }
+    return .default
+  }
+}
+```
+
+3. Set the `modalNavigationController.modalPresentationStyle` based on the path configuration.
+
+```swift
+extension TurboTabBarController: TurboNavigationDelegate {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+        modalNavigationController.modalPresentationStyle = {
+        switch proposal.modalPresentationStyle {
+        case .fullScreen:
+          return UIModalPresentationStyle.fullScreen
+        case .default:
+          return UIModalPresentationStyle.automatic
+        }
+      }()
+
+      return controller
+    }
+}
+```
+
+### How to display a full-screen modal and remove the "close" button
+
+The native modal shows a "Done" button in the top left corner. If you want to prevent the user from dismissing the modal, you can set the `isNavigationBarHidden` property on the `modalNavigationController`.
+
+Here is an example of how you would configure this through the path configuration.
+
+1. Add a new property to the path configuration
+
+```json
+{
+  "patterns": ["/users/sign_in"],
+  "properties": {
+    "context": "modal",
+    "modalPresentationStyle": "full_screen",
+    "isModalNavigationBarHidden": true
+  },
+  "comment": "Present the login screen in full-screen modal that cannot be dismissed"
+}
+```
+
+2. Configure access to the `modalPresentationStyle` on the `VisitProposal`:
+
+```swift
+// VisitProposalExtension.swift
+import Turbo
+
+extension VisitProposal {
+  var isModalNavigationBarHidden: Bool {
+    if let value = properties["isModalNavigationBarHidden"] as? Bool {
+      return value
+    }
+    return false
+  }
+}
+```
+
+3. Set the `modalNavigationController.modalPresentationStyle` based on the path configuration.
+
+```swift
+extension TurboTabBarController: TurboNavigationDelegate {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+
+      modalNavigationController.isNavigationBarHidden = proposal.isModalNavigationBarHidden
+
+      return controller
+    }
+}
+```
