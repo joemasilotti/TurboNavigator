@@ -260,3 +260,64 @@ class MyCustomClass: TurboNavigationDelegate {
     }
 }
 ```
+
+### JavaScript Bridge
+
+You can receive JavaScript messages from  your Turbo enabled app.
+
+First, we define a scriptMessageHandler.
+
+```
+class ScriptMessageHandler: NSObject, WKScriptMessageHandler {
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage ) {
+        guard
+            let body = message.body as? [String: Any],
+            let msg = body["name"] as? String
+        else {
+            print("No call")
+            return
+        }
+        handleMessage(ScriptMessageHandler.MessageTypes(rawValue: msg) ?? ScriptMessageHandler.MessageTypes.none)
+    }
+
+    private func handleMessage(_ messageType: MessageTypes) -> String? {
+        switch messageType {
+        case .hello:
+            // custom iOS function here
+            print("hello world")
+            return nil
+        case .none:
+            print("No message")
+            return nil
+        }
+    }
+
+    enum MessageTypes: String {
+        case hello = "hello"
+        case none = "none"
+    }
+}
+
+```
+
+Next, create a custom webView
+
+```
+TurboConfig.shared.makeCustomWebView = {
+  let sharedProcessPool = WKProcessPool()
+    let scriptMessageHandler = ScriptMessageHandler()
+    let configuration = WKWebViewConfiguration()
+    configuration.applicationNameForUserAgent = TurboConfig.shared.userAgent
+    configuration.processPool = sharedProcessPool
+    configuration.userContentController.add(scriptMessageHandler, name: "nativeApp")
+    return WKWebView(frame: .zero, configuration: configuration)
+}
+```
+Finally, from the web, we can pass messages to the iOS client by post a message
+
+```
+window.webkit?.messageHandlers?.nativeApp?.postMessage({name: "hello"})
+```
+
+You can read more about this approach [here](https://williamkennedy.ninja/ios/2022/11/13/turbo-native-how-to-access-native-ios-features-from-rails/)
