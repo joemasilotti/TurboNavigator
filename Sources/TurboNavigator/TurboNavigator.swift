@@ -10,6 +10,9 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Retry the request by calling `session.reload()`.
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
 
+    /// Respond to authentication challenge presented by web servers behing basic auth.
+    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+
     /// Optional. Implement to override or customize the controller to be displayed.
     /// Return `nil` to not display or route anything.
     func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
@@ -31,6 +34,10 @@ public extension TurboNavigationDelegate {
             safariViewController.preferredControlTintColor = .tintColor
         }
         controller.present(safariViewController, animated: true)
+    }
+
+    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(.performDefaultHandling, nil)
     }
 }
 
@@ -239,4 +246,8 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
+
+    public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
+    }
 }
