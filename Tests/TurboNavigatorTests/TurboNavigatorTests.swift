@@ -89,6 +89,22 @@ final class TurboNavigatorTests: XCTestCase {
         assertVisited(url: proposal.url, on: .modal)
     }
 
+    func test_default_modal_default_presentsModal_default() {
+        let proposal = VisitProposal(context: .modal, modal: .default)
+        navigator.route(proposal)
+
+        XCTAssertEqual(modalNavigationController.modalPresentationStyle, .pageSheet)
+        assertVisited(url: proposal.url, on: .modal)
+    }
+
+    func test_default_modal_default_presentsModal_fullScreen() {
+        let proposal = VisitProposal(context: .modal, modal: .fullScreen)
+        navigator.route(proposal)
+
+        XCTAssertEqual(modalNavigationController.modalPresentationStyle, .fullScreen)
+        assertVisited(url: proposal.url, on: .modal)
+    }
+
     func test_default_modal_replace_presentsModal() {
         let proposal = VisitProposal(context: .modal, presentation: .replace)
         navigator.route(proposal)
@@ -248,11 +264,13 @@ private class EmptyDelegate: TurboNavigationDelegate {
 // MARK: - VisitProposal extension
 
 private extension VisitProposal {
-    init(path: String = "", action: VisitAction = .advance, context: Navigation.Context = .default, presentation: Navigation.Presentation = .default) {
+    init(path: String = "", action: VisitAction = .advance, context: Navigation.Context = .default, presentation: Navigation.Presentation = .default, modal: Navigation.Modal = .default) {
         let url = URL(string: "https://example.com")!.appendingPathComponent(path)
         let options = VisitOptions(action: action, response: nil)
+
         let properties: PathProperties = [
             "context": context.rawValue,
+            "modal": modal.rawValue,
             "presentation": presentation.rawValue
         ]
         self.init(url: url, options: options, properties: properties)
