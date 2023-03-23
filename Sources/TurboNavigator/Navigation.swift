@@ -12,4 +12,9 @@ public enum Navigation {
         case clearAll = "clear_all"
         case replaceRoot = "replace_root"
     }
+
+    public enum Modal: String {
+        case `default`
+        case fullScreen = "full_screen"
+    }
 }

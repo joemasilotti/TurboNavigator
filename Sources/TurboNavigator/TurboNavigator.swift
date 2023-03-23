@@ -112,6 +112,7 @@ public class TurboNavigator {
             if navigationController.presentedViewController != nil {
                 pushOrReplace(on: modalNavigationController, with: controller, via: proposal)
             } else {
+                modalNavigationController.modalPresentationStyle = proposal.modalPresentationStyle
                 modalNavigationController.setViewControllers([controller], animated: false)
                 navigationController.present(modalNavigationController, animated: true)
             }
@@ -172,6 +173,7 @@ public class TurboNavigator {
             if navigationController.presentedViewController != nil {
                 modalNavigationController.replaceLastViewController(with: controller)
             } else {
+                modalNavigationController.modalPresentationStyle = proposal.modalPresentationStyle
                 modalNavigationController.setViewControllers([controller], animated: false)
                 navigationController.present(modalNavigationController, animated: true)
             }
