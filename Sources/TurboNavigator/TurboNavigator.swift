@@ -10,6 +10,9 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Retry the request by calling `session.reload()`.
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
 
+    /// Respond to authentication challenge presented by web servers behing basic auth.
+    var basicAuthCredentials: URLCredential? { get }
+
     /// Optional. Implement to override or customize the controller to be displayed.
     /// Return `nil` to not display or route anything.
     func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
@@ -31,6 +34,10 @@ public extension TurboNavigationDelegate {
             safariViewController.preferredControlTintColor = .tintColor
         }
         controller.present(safariViewController, animated: true)
+    }
+
+    var basicAuthCredentials: URLCredential? {
+        get { nil }
     }
 }
 
@@ -239,4 +246,21 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
+
+    public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        guard let basicAuthCredentials = delegate?.basicAuthCredentials else {
+            fatalError("""
+                Your server is behind HTTP basic auth but you did not configure any credentials
+                Please set the following property on your TurboNavigationDelegate:
+
+                var basicAuthCredentials: URLCredential? {
+                  get {
+                    URLCredential(user: "username", password: "password", persistence: .forSession)
+                  }
+                }
+            """)
+        }
+
+        completionHandler(.useCredential, basicAuthCredentials)
+    }
 }
