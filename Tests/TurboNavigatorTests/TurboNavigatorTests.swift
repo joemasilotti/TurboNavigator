@@ -205,6 +205,33 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
     }
 
+    func test_presentingUIAlertController_doesNotWrapInNavigationController() {
+        let alertControllerDelegate = AlertControllerDelegate()
+        navigator = TurboNavigator(
+            delegate: alertControllerDelegate,
+            navigationController: navigationController,
+            modalNavigationController: modalNavigationController
+        )
+
+        navigator.route(VisitProposal(path: "/alert"))
+
+        XCTAssert(navigationController.presentedViewController is UIAlertController)
+    }
+
+    func test_presentingUIAlertController_onTheModal_doesNotWrapInNavigationController() {
+        let alertControllerDelegate = AlertControllerDelegate()
+        navigator = TurboNavigator(
+            delegate: alertControllerDelegate,
+            navigationController: navigationController,
+            modalNavigationController: modalNavigationController
+        )
+
+        navigator.route(VisitProposal(context: .modal))
+        navigator.route(VisitProposal(path: "/alert"))
+
+        XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
+    }
+
     // MARK: Private
 
     private enum Context {
@@ -257,4 +284,17 @@ private extension VisitProposal {
         ]
         self.init(url: url, options: options, properties: properties)
     }
+}
+
+// MARK: - AlertControllerDelegate
+
+private class AlertControllerDelegate: TurboNavigationDelegate {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+        if proposal.url.path == "/alert" {
+            return UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
+        }
+        return controller
+    }
+
+    func session(_ session: Turbo.Session, didFailRequestForVisitable visitable: Turbo.Visitable, error: Error) {}
 }
