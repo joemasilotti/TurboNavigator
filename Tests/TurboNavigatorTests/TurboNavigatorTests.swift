@@ -3,7 +3,7 @@ import Turbo
 import XCTest
 
 /// Tests are written in the following format:
-/// test_currentContext_givenContext_givenPresentation_modifiers_result()
+/// `test_currentContext_givenContext_givenPresentation_modifiers_result()`
 /// See the README for a more visually pleasing table.
 final class TurboNavigatorTests: XCTestCase {
     override func setUp() {
@@ -106,7 +106,7 @@ final class TurboNavigatorTests: XCTestCase {
 
         let proposal = VisitProposal()
         navigator.route(proposal)
-        XCTAssert(navigationController.dismissWasCalled)
+        XCTAssertNil(navigationController.presentedViewController)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         assertVisited(url: proposal.url, on: .main)
@@ -118,7 +118,7 @@ final class TurboNavigatorTests: XCTestCase {
 
         let proposal = VisitProposal(presentation: .replace)
         navigator.route(proposal)
-        XCTAssert(navigationController.dismissWasCalled)
+        XCTAssertNil(navigationController.presentedViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
         assertVisited(url: proposal.url, on: .main)
@@ -171,7 +171,7 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(modalNavigationController.viewControllers.count, 2)
 
         navigator.route(VisitProposal(presentation: .pop))
-        XCTAssertFalse(navigationController.dismissWasCalled)
+        XCTAssertNotNil(navigationController.presentedViewController)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
     }
 
@@ -180,7 +180,7 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
 
         navigator.route(VisitProposal(presentation: .pop))
-        XCTAssertTrue(navigationController.dismissWasCalled)
+        XCTAssertNil(navigationController.presentedViewController)
     }
 
     func test_any_any_clearAll_dismissesModalThenPopsToRootOnMainStack() {
@@ -190,7 +190,7 @@ final class TurboNavigatorTests: XCTestCase {
 
         let proposal = VisitProposal(presentation: .clearAll)
         navigator.route(proposal)
-        XCTAssertTrue(navigationController.dismissWasCalled)
+        XCTAssertNil(navigationController.presentedViewController)
         XCTAssertEqual(navigationController.viewControllers, [rootController])
     }
 
@@ -200,9 +200,36 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(navigationController.viewControllers.count, 3)
 
         navigator.route(VisitProposal(presentation: .replaceRoot))
-        XCTAssertTrue(navigationController.dismissWasCalled)
+        XCTAssertNil(navigationController.presentedViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+    }
+
+    func test_presentingUIAlertController_doesNotWrapInNavigationController() {
+        let alertControllerDelegate = AlertControllerDelegate()
+        navigator = TurboNavigator(
+            delegate: alertControllerDelegate,
+            navigationController: navigationController,
+            modalNavigationController: modalNavigationController
+        )
+
+        navigator.route(VisitProposal(path: "/alert"))
+
+        XCTAssert(navigationController.presentedViewController is UIAlertController)
+    }
+
+    func test_presentingUIAlertController_onTheModal_doesNotWrapInNavigationController() {
+        let alertControllerDelegate = AlertControllerDelegate()
+        navigator = TurboNavigator(
+            delegate: alertControllerDelegate,
+            navigationController: navigationController,
+            modalNavigationController: modalNavigationController
+        )
+
+        navigator.route(VisitProposal(context: .modal))
+        navigator.route(VisitProposal(path: "/alert"))
+
+        XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
     }
 
     // MARK: Private
@@ -257,4 +284,17 @@ private extension VisitProposal {
         ]
         self.init(url: url, options: options, properties: properties)
     }
+}
+
+// MARK: - AlertControllerDelegate
+
+private class AlertControllerDelegate: TurboNavigationDelegate {
+    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+        if proposal.url.path == "/alert" {
+            return UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
+        }
+        return controller
+    }
+
+    func session(_ session: Turbo.Session, didFailRequestForVisitable visitable: Turbo.Visitable, error: Error) {}
 }

@@ -2,10 +2,12 @@ import UIKit
 
 /// Manipulate a navigation controller under test.
 /// Ensures `viewControllers` is updated synchronously.
-/// Use `dismissWasCalled` instead of checking if `presentedViewController` is nil.
+/// Manages `presentedViewController` directly because it isn't updated on the same thread.
 class TestableNavigationController: UINavigationController {
-    /// Use instead of checking if `presentedViewController` is nil.
-    private(set) var dismissWasCalled = false
+    override var presentedViewController: UIViewController? {
+        get { _presentedViewController }
+        set { _presentedViewController = newValue }
+    }
 
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         super.pushViewController(viewController, animated: false)
@@ -24,12 +26,16 @@ class TestableNavigationController: UINavigationController {
     }
 
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        _presentedViewController = viewControllerToPresent
         super.present(viewControllerToPresent, animated: false, completion: completion)
     }
 
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        // Even dismissing without animation doesn't correctly set presentedViewController to nil.
-        dismissWasCalled = true
+        _presentedViewController = nil
         super.dismiss(animated: false, completion: completion)
     }
+
+    // MARK: Private
+
+    private var _presentedViewController: UIViewController?
 }

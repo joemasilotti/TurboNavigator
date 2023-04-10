@@ -71,19 +71,23 @@ public class TurboNavigator {
     public func route(_ proposal: VisitProposal) {
         guard let controller = controller(for: proposal) else { return }
 
-        switch proposal.presentation {
-        case .default:
-            navigate(with: controller, via: proposal)
-        case .pop:
-            pop()
-        case .replace:
-            replace(with: controller, via: proposal)
-        case .refresh:
-            refresh()
-        case .clearAll:
-            clearAll()
-        case .replaceRoot:
-            replaceRoot(with: controller)
+        if let alert = controller as? UIAlertController {
+            presentAlert(alert)
+        } else {
+            switch proposal.presentation {
+            case .default:
+                navigate(with: controller, via: proposal)
+            case .pop:
+                pop()
+            case .replace:
+                replace(with: controller, via: proposal)
+            case .refresh:
+                refresh()
+            case .clearAll:
+                clearAll()
+            case .replaceRoot:
+                replaceRoot(with: controller)
+            }
         }
     }
 
@@ -107,6 +111,14 @@ public class TurboNavigator {
 
         // Developer can return nil from this method to break out of navigation.
         return delegate.controller(defaultController, forProposal: proposal)
+    }
+
+    private func presentAlert(_ alert: UIAlertController) {
+        if navigationController.presentedViewController != nil {
+            modalNavigationController.present(alert, animated: true)
+        } else {
+            navigationController.present(alert, animated: true)
+        }
     }
 
     private func navigate(with controller: UIViewController, via proposal: VisitProposal) {
