@@ -55,8 +55,8 @@ public class TurboNavigator {
 
     // MARK: Internal
 
-    let session: Session
-    let modalSession: Session
+    var session: Session
+    var modalSession: Session
 
     // MARK: Private
 
@@ -219,7 +219,11 @@ extension TurboNavigator: SessionDelegate {
         delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
     }
 
-    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
+    public func sessionWebViewProcessDidTerminate(_ session: Session) {
+        self.session = Session(webView: TurboConfig.shared.makeWebView())
+        modalSession = Session(webView: TurboConfig.shared.makeWebView())
+        clearAll()
+    }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
