@@ -296,5 +296,5 @@ private class AlertControllerDelegate: TurboNavigationDelegate {
         return controller
     }
 
-    func session(_ session: Turbo.Session, didFailRequestForVisitable visitable: Turbo.Visitable, error: Error) {}
+    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
 }

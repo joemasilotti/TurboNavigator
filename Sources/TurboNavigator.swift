@@ -200,7 +200,7 @@ public class TurboNavigator {
 // MARK: - SessionDelegate
 
 extension TurboNavigator: SessionDelegate {
-    public func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
+    public func session(_ session: Session, didProposeVisit proposal: VisitProposal) {
         route(proposal)
     }
 
@@ -219,7 +219,7 @@ extension TurboNavigator: SessionDelegate {
         delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
     }
 
-    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {
+    public func sessionWebViewProcessDidTerminate(_ session: Session) {
         delegate?.sessionWebViewProcessDidTerminate(session)
     }
 
