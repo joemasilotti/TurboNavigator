@@ -219,7 +219,9 @@ extension TurboNavigator: SessionDelegate {
         delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
     }
 
-    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {}
+    public func sessionWebViewProcessDidTerminate(_ session: Turbo.Session) {
+        delegate?.sessionWebViewProcessDidTerminate(session)
+    }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)

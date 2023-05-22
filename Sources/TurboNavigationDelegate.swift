@@ -19,6 +19,9 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Optional. Implement to customize handling of external URLs.
     /// If not implemented, will present `SFSafariViewController` as a modal and load the URL.
     func openExternalURL(_ url: URL, from controller: UIViewController)
+
+    /// Optional. Implement to handle when the web view process dies and can't be restored.
+    func sessionWebViewProcessDidTerminate(_ session: Session)
 }
 
 public extension TurboNavigationDelegate {
@@ -38,4 +41,6 @@ public extension TurboNavigationDelegate {
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.performDefaultHandling, nil)
     }
+
+    func sessionWebViewProcessDidTerminate(_ session: Session) {}
 }
