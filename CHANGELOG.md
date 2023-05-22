@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## May 22, 2023
+
+* Add new optional delegate callback to handle when the web view process dies [5800f54](https://github.com/joemasilotti/TurboNavigator/commit/5800f541ed0d437956b8b52163348987da06332c)
+
 ## March 12, 2023
 
 * External URLs are presented via `SFSafariViewController` but can be customized [#18](https://github.com/joemasilotti/TurboNavigator/pull/18)
