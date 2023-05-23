@@ -21,7 +21,7 @@ I've been using something a version of this on the [dozens of Turbo Native apps]
 When a link is tapped, turbo-ios sends a `VisitProposal` to your application code. Based on the [Path Configuration](https://github.com/hotwired/turbo-ios/blob/main/Docs/PathConfiguration.md), different `PathProperties` will be set.
 
 * **Current context** - What state the app is in.
-    * `modal` - a modal is currently presented 
+    * `modal` - a modal is currently presented
     * `default` - otherwise
 * **Given context** - Value of `context` on the requested link.
     * `modal` or `default`/blank
@@ -172,7 +172,7 @@ To hook into the "refresh" [turbo-rails native route](https://github.com/hotwire
     "/refresh_historical_location"
   ],
   "properties": {
-    "prsentation": "refresh"
+    "presentation": "refresh"
   }
 }
 ```
