@@ -226,4 +226,8 @@ extension TurboNavigator: SessionDelegate {
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
     }
+
+    public func sessionDidLoadWebView(_ session: Session) {
+        delegate?.sessionDidLoadWebView(session)
+    }
 }

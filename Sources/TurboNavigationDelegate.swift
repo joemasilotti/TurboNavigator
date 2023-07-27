@@ -22,6 +22,8 @@ public protocol TurboNavigationDelegate: AnyObject {
 
     /// Optional. Implement to handle when the web view process dies and can't be restored.
     func sessionWebViewProcessDidTerminate(_ session: Session)
+
+    func sessionDidLoadWebView(_ session: Session)
 }
 
 public extension TurboNavigationDelegate {
@@ -43,4 +45,8 @@ public extension TurboNavigationDelegate {
     }
 
     func sessionWebViewProcessDidTerminate(_ session: Session) {}
+
+    func sessionDidLoadWebView(_ session: Session) {
+        session.webView.navigationDelegate = session
+    }
 }
