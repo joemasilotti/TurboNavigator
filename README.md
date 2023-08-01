@@ -156,7 +156,7 @@ To present forms (URLs ending in `/new` or `/edit`) as a modal, add the followin
 {
   "patterns": [
     "/new$",
-    "/edi$"
+    "/edit$"
   ],
   "properties": {
     "context": "modal"
