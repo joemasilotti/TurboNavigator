@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/hotwired/turbo-ios", revision: "2ace9ebe01fe3bce3e7e8df38cb82df052493663"),
+        .package(url: "https://github.com/hotwired/turbo-ios", revision: "312f36977959a14f5cee3c658d92633162b9177d"),
     ],
     targets: [
         .target(
