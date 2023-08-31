@@ -52,6 +52,11 @@ public class TurboNavigator {
             }
         }
     }
+    
+    public func setupSessionWebViewUIDelegate() {
+        self.session.webView.uiDelegate = self.session as? WKUIDelegate
+        self.modalSession.webView.uiDelegate = self.modalSession as? WKUIDelegate
+    }
 
     // MARK: Internal
 

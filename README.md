@@ -260,3 +260,24 @@ class MyCustomClass: TurboNavigationDelegate {
     }
 }
 ```
+
+### Customize behavior for Javascript Alert()
+
+If you have a web view that uses `alert()` or `confirm()`, you need to implement the following method which sets up the `WKUIDelegate`.
+
+This will only work if you have made `Session` conform to `WKUIDelegate`.
+
+```swift
+extension Session: WKUIDelegate {
+  //Implement different methods here to handle alerts, etc.
+}
+```
+You must call this function in the SceneDelegate' to set setup this behavior.
+
+Found in the `TurboNavigator` class:
+```swift
+    public func setupSessionWebViewUIDelegate() {
+        self.session.webView.uiDelegate = self.session as? WKUIDelegate
+        self.modalSession.webView.uiDelegate = self.modalSession as? WKUIDelegate
+    }
+```
