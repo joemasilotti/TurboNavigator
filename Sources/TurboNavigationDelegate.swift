@@ -22,6 +22,10 @@ public protocol TurboNavigationDelegate: AnyObject {
 
     /// Optional. Implement to handle when the web view process dies and can't be restored.
     func sessionWebViewProcessDidTerminate(_ session: Session)
+
+    /// Optional. Implement to become the web view's navigation delegate after the initial cold boot visit is completed.
+    /// https://github.com/hotwired/turbo-ios/blob/main/Docs/Overview.md#becoming-the-web-views-navigation-delegate
+    func sessionDidLoadWebView(_ session: Session)
 }
 
 public extension TurboNavigationDelegate {
@@ -41,6 +45,8 @@ public extension TurboNavigationDelegate {
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.performDefaultHandling, nil)
     }
+
+    func sessionDidLoadWebView(_ session: Session) {}
 
     func sessionWebViewProcessDidTerminate(_ session: Session) {}
 }
