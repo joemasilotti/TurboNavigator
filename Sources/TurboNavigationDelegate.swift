@@ -23,7 +23,8 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Optional. Implement to handle when the web view process dies and can't be restored.
     func sessionWebViewProcessDidTerminate(_ session: Session)
 
-    /// Optional. Implement if you need to change the naviagation delegate on the webView (https://github.com/hotwired/turbo-ios/blob/main/Docs/Overview.md#becoming-the-web-views-navigation-delegate)
+    /// Optional. Implement to become the web view's navigation delegate after the initial cold boot visit is completed.
+    /// https://github.com/hotwired/turbo-ios/blob/main/Docs/Overview.md#becoming-the-web-views-navigation-delegate
     func sessionDidLoadWebView(_ session: Session)
 }
 
