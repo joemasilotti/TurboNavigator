@@ -67,13 +67,10 @@ public class TurboNavigator {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private weak var delegate: TurboNavigationDelegate?
+    private unowned let delegate: TurboNavigationDelegate
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         let defaultController = VisitableViewController(url: proposal.url)
-        guard let delegate = delegate else { return defaultController }
-
-        // Developer can return nil from this method to break out of navigation.
         return delegate.controller(defaultController, forProposal: proposal)
     }
 
@@ -214,23 +211,23 @@ extension TurboNavigator: SessionDelegate {
 
     public func session(_ session: Session, openExternalURL url: URL) {
         let controller = session === modalSession ? modalNavigationController : navigationController
-        delegate?.openExternalURL(url, from: controller)
+        delegate.openExternalURL(url, from: controller)
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        delegate?.session(session, didFailRequestForVisitable: visitable, error: error)
+        delegate.session(session, didFailRequestForVisitable: visitable, error: error)
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Session) {
-        delegate?.sessionWebViewProcessDidTerminate(session)
+        delegate.sessionWebViewProcessDidTerminate(session)
     }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
+        delegate.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
     }
 
     public func sessionDidLoadWebView(_ session: Session) {
         session.webView.navigationDelegate = session
-        delegate?.sessionDidLoadWebView(session)
+        delegate.sessionDidLoadWebView(session)
     }
 }
