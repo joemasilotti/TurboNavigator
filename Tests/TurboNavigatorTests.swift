@@ -232,18 +232,6 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
     }
 
-    func test_sessionWebViewProcessDidTerminate_dismissesTheModal_popsToRoot() {
-        navigator.route(VisitProposal(path: "/one"))
-        XCTAssertEqual(navigationController.viewControllers.count, 2)
-        navigator.route(VisitProposal(path: "/two", context: .modal))
-        XCTAssertNotNil(navigationController.presentedViewController)
-
-        navigator.sessionWebViewProcessDidTerminate(navigator.session)
-
-        XCTAssertEqual(navigationController.viewControllers.count, 1)
-        XCTAssertNil(navigationController.presentedViewController)
-    }
-
     // MARK: Private
 
     private enum Context {

@@ -55,8 +55,8 @@ public class TurboNavigator {
 
     // MARK: Internal
 
-    var session: Session
-    var modalSession: Session
+    let session: Session
+    let modalSession: Session
 
     // MARK: Private
 
