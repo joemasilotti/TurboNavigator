@@ -220,9 +220,7 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Session) {
-        self.session = Session(webView: TurboConfig.shared.makeWebView())
-        modalSession = Session(webView: TurboConfig.shared.makeWebView())
-        clearAll()
+        session.reload()
     }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
