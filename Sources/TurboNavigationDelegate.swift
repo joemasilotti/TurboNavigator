@@ -5,6 +5,9 @@ import WebKit
 /// Implement to be notified when certain navigations are performed
 /// or to render a native controller instead of a Turbo web visit.
 public protocol TurboNavigationDelegate: AnyObject {
+    /// Configure the Session's WKWebView when it's loaded
+    func session(_ session: Session, didLoadWebView webView: WKWebView)
+
     /// An error occurred loading the request, present it to the user.
     /// Retry the request by calling `session.reload()`.
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error)
@@ -25,6 +28,8 @@ public protocol TurboNavigationDelegate: AnyObject {
 }
 
 public extension TurboNavigationDelegate {
+    func session(_ session: Session, didLoadWebView webView: WKWebView) {}
+    
     func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
         VisitableViewController(url: proposal.url)
     }

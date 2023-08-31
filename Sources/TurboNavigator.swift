@@ -200,6 +200,11 @@ public class TurboNavigator {
 // MARK: - SessionDelegate
 
 extension TurboNavigator: SessionDelegate {
+    public func sessionDidLoadWebView(_ session: Session) {
+        super.sessionDidLoadWebView(session)
+        delegate?.session(session, didLoadWebView: session.webView)
+    }
+
     public func session(_ session: Session, didProposeVisit proposal: VisitProposal) {
         route(proposal)
     }

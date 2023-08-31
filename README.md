@@ -228,6 +228,27 @@ Keep "Turbo Native" to use `turbo_native_app?` on your Rails server.
 TurboConfig.shared.userAgent = "Custom (Turbo Native)"
 ```
 
+### Access the web view
+
+Access the `WKWebView` instance when it gets loaded by the `Session`.
+
+Being able to access the `WebView` when it's loaded might be useful to your
+application. For example, you can attach a
+
+```swift
+class MyCustomClass: TurboNavigationDelegate, NSObject, WKScriptMessageHandler {
+    let navigator = TurboNavigator(delegate: self)
+
+    func session(_ session: Session, didLoadWebView webView: WKWebView) {
+        webView.configuration.userContentController.add(self, name: "myNativeApp")
+    }
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage ) {
+        // handle the JavaScript Object message
+    }
+}
+```
+
 ### Customize the web view and web view configuration
 
 A block is used because a new instance is needed for each web view.
