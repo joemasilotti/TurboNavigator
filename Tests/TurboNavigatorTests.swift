@@ -11,7 +11,7 @@ final class TurboNavigatorTests: XCTestCase {
         modalNavigationController = TestableNavigationController()
 
         navigator = TurboNavigator(
-            delegate: EmptyDelegate(),
+            delegate: delegate,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
         )
@@ -239,6 +239,7 @@ final class TurboNavigatorTests: XCTestCase {
     }
 
     private var navigator: TurboNavigator!
+    private let delegate = EmptyDelegate()
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
     private let window = UIWindow()
