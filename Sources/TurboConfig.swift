@@ -1,7 +1,7 @@
 import WebKit
 
 public class TurboConfig {
-    public typealias WebViewBlock = () -> WKWebView
+    public typealias WebViewBlock = (_ configuration: WKWebViewConfiguration) -> WKWebView
 
     public static let shared = TurboConfig()
 
@@ -11,12 +11,14 @@ public class TurboConfig {
 
     /// Optionally customize the web views used by each Turbo Session.
     /// Ensure you return a new instance each time.
-    public var makeCustomWebView: WebViewBlock?
+    public var makeCustomWebView: WebViewBlock = { (configuration: WKWebViewConfiguration) in
+        WKWebView(frame: .zero, configuration: configuration)
+    }
 
     // MARK: - Internal
 
     func makeWebView() -> WKWebView {
-        makeCustomWebView?() ?? WKWebView(frame: .zero, configuration: makeWebViewConfiguration())
+        makeCustomWebView(makeWebViewConfiguration())
     }
 
     // MARK: - Private

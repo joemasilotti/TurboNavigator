@@ -230,19 +230,14 @@ TurboConfig.shared.userAgent = "Custom (Turbo Native)"
 
 ### Customize the web view and web view configuration
 
-A block is used because a new instance is needed for each web view.
-
-Don't forget to set user agent and use a shared process pool on the configuration.
+A closure is used because a new instance is needed for each web view. The closure has a `WKWebViewConfiguration` argument that's pre-built and ready to be customized and assigned to a new web view.
 
 ```swift
-TurboConfig.shared.makeCustomWebView = {
-    let configuration = WKWebViewConfiguration()
-    // Customize configuration.
+TurboConfig.shared.makeCustomWebView = { (configuration: WKWebViewConfiguration) in
+    // Customize the WKWebViewConfiguration instance
+    // ...
 
-    let webView = WKWebView(frame: .zero, configuration: configuration)
-    // Customize web view.
-
-    return webView
+    return WKWebView(frame: .zero, configuration: configuration)
 }
 ```
 
