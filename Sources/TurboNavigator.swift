@@ -49,6 +49,8 @@ public class TurboNavigator {
                 clearAll()
             case .replaceRoot:
                 replaceRoot(with: controller)
+            case .none:
+                break // Do nothing.
             }
         }
     }
@@ -200,7 +202,7 @@ public class TurboNavigator {
 // MARK: - SessionDelegate
 
 extension TurboNavigator: SessionDelegate {
-    public func session(_ session: Turbo.Session, didProposeVisit proposal: Turbo.VisitProposal) {
+    public func session(_ session: Session, didProposeVisit proposal: VisitProposal) {
         route(proposal)
     }
 
@@ -225,5 +227,10 @@ extension TurboNavigator: SessionDelegate {
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
+    }
+
+    public func sessionDidLoadWebView(_ session: Session) {
+        session.webView.navigationDelegate = session
+        delegate?.sessionDidLoadWebView(session)
     }
 }

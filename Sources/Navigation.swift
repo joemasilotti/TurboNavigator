@@ -11,5 +11,6 @@ public enum Navigation {
         case refresh
         case clearAll = "clear_all"
         case replaceRoot = "replace_root"
+        case none
     }
 }

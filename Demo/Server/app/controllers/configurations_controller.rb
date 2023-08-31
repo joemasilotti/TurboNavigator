@@ -23,12 +23,12 @@ class ConfigurationsController < ApplicationController
         },
         {
           patterns: [
-            "/refresh_historical_location"
+            "/resume_historical_location"
           ],
           properties: {
-            presentation: "refresh"
+            presentation: "none"
           },
-          comment: "Dismiss a modal or pop a controller then refresh with `refresh_or_redirect_to` via turbo-rails."
+          comment: "Skip navigation with `resume_or_redirect_to` via turbo-rails."
         },
         {
           patterns: [
