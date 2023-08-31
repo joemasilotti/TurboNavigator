@@ -49,6 +49,8 @@ public class TurboNavigator {
                 clearAll()
             case .replaceRoot:
                 replaceRoot(with: controller)
+            case .none:
+                break // Do nothing.
             }
         }
     }
