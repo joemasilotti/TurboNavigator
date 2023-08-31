@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "TurboNavigator",
     platforms: [
-        .iOS(.v12),
+        .iOS(.v14),
     ],
     products: [
         .library(
@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/hotwired/turbo-ios", revision: "2ace9ebe01fe3bce3e7e8df38cb82df052493663"),
+        .package(url: "https://github.com/hotwired/turbo-ios", .upToNextMajor(from: "7.0.0")),
     ],
     targets: [
         .target(
