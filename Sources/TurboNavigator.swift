@@ -219,7 +219,7 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Session) {
-        delegate.sessionWebViewProcessDidTerminate(session)
+        session.reload()
     }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
