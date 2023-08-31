@@ -24,6 +24,12 @@
     description: "Pop this screen off the stack." %>
 
   <%= render "navigations/item",
+    path: turbo_resume_historical_location_path,
+    icon: "bi-sign-stop",
+    name: "Resume navigation",
+    description: "Do nothing." %>
+
+  <%= render "navigations/item",
     path: "/not_found",
     icon: "bi-bug",
     name: "Error handling",
