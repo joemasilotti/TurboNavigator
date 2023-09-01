@@ -33,12 +33,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension SceneDelegate: TurboNavigationDelegate {
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        if let errorPresenter = visitable as? ErrorPresenter {
-            errorPresenter.presentError(error) {
-                session.reload()
-            }
-        }
-    }
-}
+extension SceneDelegate: TurboNavigationDelegate {}

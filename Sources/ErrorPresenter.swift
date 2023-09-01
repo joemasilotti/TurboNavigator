@@ -7,7 +7,33 @@ protocol ErrorPresenter: UIViewController {
     func presentError(_ error: Error, handler: @escaping Handler)
 }
 
-struct ErrorView: View {
+extension ErrorPresenter {
+    func presentError(_ error: Error, handler: @escaping () -> Void) {
+        let errorView = ErrorView(error: error) { [unowned self] in
+            handler()
+            self.removeErrorViewController()
+        }
+
+        let controller = UIHostingController(rootView: errorView)
+        addChild(controller)
+        addFullScreenSubview(controller.view)
+        controller.didMove(toParent: self)
+    }
+
+    private func removeErrorViewController() {
+        if let child = children.first(where: { $0 is UIHostingController<ErrorView> }) {
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
+    }
+}
+
+extension UIViewController: ErrorPresenter {}
+
+// MARK: Private
+
+private struct ErrorView: View {
     let error: Error
     let handler: ErrorPresenter.Handler?
 
@@ -33,7 +59,7 @@ struct ErrorView: View {
     }
 }
 
-struct ErrorView_Previews: PreviewProvider {
+private struct ErrorView_Previews: PreviewProvider {
     static var previews: some View {
         return ErrorView(error: NSError(
             domain: "com.example.error",
@@ -43,28 +69,8 @@ struct ErrorView_Previews: PreviewProvider {
     }
 }
 
-extension ErrorPresenter {
-    func presentError(_ error: Error, handler: @escaping () -> Void) {
-        let errorView = ErrorView(error: error) { [unowned self] in
-            handler()
-            self.removeErrorViewController()
-        }
-
-        let controller = UIHostingController(rootView: errorView)
-        addChild(controller)
-        addFullScreenSubview(controller.view)
-        controller.didMove(toParent: self)
-    }
-
-    private func removeErrorViewController() {
-        if let child = children.first(where: { $0 is UIHostingController<ErrorView> }) {
-            child.willMove(toParent: nil)
-            child.view.removeFromSuperview()
-            child.removeFromParent()
-        }
-    }
-
-    private func addFullScreenSubview(_ subview: UIView) {
+private extension UIViewController {
+    func addFullScreenSubview(_ subview: UIView) {
         view.addSubview(subview)
         subview.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -75,5 +81,3 @@ extension ErrorPresenter {
         ])
     }
 }
-
-extension UIViewController: ErrorPresenter {}

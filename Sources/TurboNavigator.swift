@@ -215,7 +215,9 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        delegate.session(session, didFailRequestForVisitable: visitable, error: error)
+        delegate.visitableDidFailRequest(visitable, error: error) {
+            session.reload()
+        }
     }
 
     public func sessionWebViewProcessDidTerminate(_ session: Session) {
