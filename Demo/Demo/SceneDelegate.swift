@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let baseURL = URL(string: "http://localhost:3000")!
     private lazy var turboNavigator = TurboNavigator(delegate: self, pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
-        .server(baseURL.appending(path: "/configuration"))
+        .server(baseURL.appendingPathComponent("/configuration"))
     ])
 
     private func createWindow(in windowScene: UIWindowScene) {
