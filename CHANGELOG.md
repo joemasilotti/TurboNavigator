@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## August 31, 2023
+
+* Update to turbo-ios v7.0.0 and bump min to iOS 14 [#44](https://github.com/joemasilotti/TurboNavigator/pull/44)
+* Pass a configuration to the web view create block by @seanpdoyle [#41](https://github.com/joemasilotti/TurboNavigator/pull/41)
+* Option to override `sessionDidLoadWebView(_:)` by @yanshiyason [#35](https://github.com/joemasilotti/TurboNavigator/pull/35)
+* Handle `/resume_historical_location` route [#38](https://github.com/joemasilotti/TurboNavigator/pull/38)
+
+### Breaking changes
+
+* Minimum iOS support is now iOS 14
+* `makeCustomWebView()` configurations should be updated to take a `WKWebViewConfiguration`
+
+```swift
+TurboConfig.shared.makeCustomWebView = { (configuration: WKWebViewConfiguration) in
+    // Customize the WKWebViewConfiguration instance
+    // ...
+    return WKWebView(frame: .zero, configuration: configuration)
+}
+```
+
 ## May 22, 2023
 
 * Add new optional delegate callback to handle when the web view process dies [5800f54](https://github.com/joemasilotti/TurboNavigator/commit/5800f541ed0d437956b8b52163348987da06332c)
