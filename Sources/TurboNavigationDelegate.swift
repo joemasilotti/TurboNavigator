@@ -17,7 +17,7 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Optional. An error occurred loading the request, present it to the user.
     /// Retry the request by executing the closure.
     /// If not implemented, will present the error's localized description and a Retry button.
-    func visitableDidFailRequest(_ visitable: Visitable, error: Error, reload: @escaping RetryBlock)
+    func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock)
 
     /// Optional. Implement to customize handling of external URLs.
     /// If not implemented, will present `SFSafariViewController` as a modal and load the URL.
@@ -33,10 +33,10 @@ public extension TurboNavigationDelegate {
         VisitableViewController(url: proposal.url)
     }
 
-    func visitableDidFailRequest(_ visitable: Visitable, error: Error, reload: @escaping RetryBlock) {
+    func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
         if let errorPresenter = visitable as? ErrorPresenter {
             errorPresenter.presentError(error) {
-                reload()
+                retry()
             }
         }
     }
