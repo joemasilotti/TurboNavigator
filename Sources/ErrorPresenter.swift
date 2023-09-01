@@ -1,13 +1,13 @@
 import SwiftUI
 import UIKit
 
-protocol ErrorPresenter: UIViewController {
+public protocol ErrorPresenter: UIViewController {
     typealias Handler = () -> Void
 
     func presentError(_ error: Error, handler: @escaping Handler)
 }
 
-extension ErrorPresenter {
+public extension ErrorPresenter {
     func presentError(_ error: Error, handler: @escaping () -> Void) {
         let errorView = ErrorView(error: error) { [unowned self] in
             handler()
