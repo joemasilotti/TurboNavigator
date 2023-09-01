@@ -1,3 +1,4 @@
+import SwiftUI
 import UIKit
 
 protocol ErrorPresenter: UIViewController {
@@ -6,110 +7,73 @@ protocol ErrorPresenter: UIViewController {
     func presentError(_ error: Error, handler: @escaping Handler)
 }
 
-/// Copied from the turbo-ios Demo project for this demo.
-extension ErrorPresenter {
-    func presentError(_ error: Error, handler: @escaping Handler) {
-        let errorViewController = ErrorViewController()
-        errorViewController.configure(with: error) { [unowned self] in
-            self.removeErrorViewController(errorViewController)
-            handler()
+struct ErrorView: View {
+    let error: Error
+    let handler: ErrorPresenter.Handler?
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 38, weight: .semibold))
+                .foregroundColor(.accentColor)
+
+            Text("Error loading page")
+                .font(.largeTitle)
+
+            Text(error.localizedDescription)
+                .font(.body)
+                .multilineTextAlignment(.center)
+
+            Button("Retry") {
+                handler?()
+            }
+            .font(.system(size: 17, weight: .bold))
         }
-
-        let errorView = errorViewController.view!
-        errorView.translatesAutoresizingMaskIntoConstraints = false
-
-        addChild(errorViewController)
-        view.addSubview(errorView)
-        NSLayoutConstraint.activate([
-            errorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            errorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            errorView.topAnchor.constraint(equalTo: view.topAnchor),
-            errorView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        errorViewController.didMove(toParent: self)
-    }
-
-    private func removeErrorViewController(_ errorViewController: UIViewController) {
-        errorViewController.willMove(toParent: nil)
-        errorViewController.view.removeFromSuperview()
-        errorViewController.removeFromParent()
+        .padding(32)
     }
 }
 
-final class ErrorViewController: UIViewController {
-    var handler: ErrorPresenter.Handler?
+struct ErrorView_Previews: PreviewProvider {
+    static var previews: some View {
+        return ErrorView(error: NSError(
+            domain: "com.example.error",
+            code: 1001,
+            userInfo: [NSLocalizedDescriptionKey: "Could not connect to the server."]
+        )) {}
+    }
+}
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setup()
+extension ErrorPresenter {
+    func presentError(_ error: Error, handler: @escaping () -> Void) {
+        let errorView = ErrorView(error: error) { [unowned self] in
+            handler()
+            self.removeErrorViewController()
+        }
+
+        let controller = UIHostingController(rootView: errorView)
+        addChild(controller)
+        addFullScreenSubview(controller.view)
+        controller.didMove(toParent: self)
     }
 
-    private func setup() {
-        view.backgroundColor = .systemBackground
+    private func removeErrorViewController() {
+        if let child = children.first(where: { $0 is UIHostingController<ErrorView> }) {
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
+    }
 
-        let vStack = UIStackView(arrangedSubviews: [imageView, titleLabel, bodyLabel, button])
-        vStack.translatesAutoresizingMaskIntoConstraints = false
-        vStack.axis = .vertical
-        vStack.spacing = 16
-        vStack.alignment = .center
-
-        view.addSubview(vStack)
+    private func addFullScreenSubview(_ subview: UIView) {
+        view.addSubview(subview)
+        subview.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            vStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            vStack.leadingAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 32),
-            vStack.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -32),
+            subview.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            subview.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            subview.topAnchor.constraint(equalTo: view.topAnchor),
+            subview.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
-    func configure(with error: Error, handler: @escaping ErrorPresenter.Handler) {
-        titleLabel.text = "Error loading page"
-        bodyLabel.text = error.localizedDescription
-        self.handler = handler
-    }
-
-    @objc func performAction(_ sender: UIButton) {
-        handler?()
-    }
-
-    // MARK: - Views
-
-    private let imageView: UIImageView = {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 38, weight: .semibold)
-        let image = UIImage(systemName: "exclamationmark.triangle", withConfiguration: configuration)
-        let imageView = UIImageView(image: image)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
-        label.textAlignment = .center
-
-        return label
-    }()
-
-    private let bodyLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-
-        return label
-    }()
-
-    private lazy var button: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Retry", for: .normal)
-        button.addTarget(self, action: #selector(performAction(_:)), for: .touchUpInside)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
-
-        return button
-    }()
 }
 
 extension UIViewController: ErrorPresenter {}
