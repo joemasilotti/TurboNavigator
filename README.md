@@ -255,3 +255,23 @@ class MyCustomClass: TurboNavigationDelegate {
     }
 }
 ```
+
+### Customized error handling
+
+By default, Turbo Navigator will automatically handle any errors that occur when performing visits. The error's localized description and a button to retry the request is displayed.
+
+You can customize the error handling by overriding the following delegate method.
+
+```swift
+extension MyCustomClass: TurboNavigationDelegate {
+    func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
+        if case let TurboError.http(statusCode) = error, statusCode == 401 {
+            // Custom error handling for 401 responses.
+        } else if let errorPresenter = visitable as? ErrorPresenter {
+            errorPresenter.presentError(error) {
+                retry()
+            }
+        }
+    }
+}
+```
