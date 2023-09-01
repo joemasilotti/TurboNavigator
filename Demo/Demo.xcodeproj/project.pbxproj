@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8462832529B8C6B5004EFC9A /* TurboNavigator in Frameworks */ = {isa = PBXBuildFile; productRef = 8462832429B8C6B5004EFC9A /* TurboNavigator */; };
-		8462832729B90BB9004EFC9A /* ErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8462832629B90BB9004EFC9A /* ErrorPresenter.swift */; };
 		8484C2E929B132D20018596C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8484C2E829B132D20018596C /* AppDelegate.swift */; };
 		8484C2EB29B132D20018596C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8484C2EA29B132D20018596C /* SceneDelegate.swift */; };
 		8484C2F229B132D30018596C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8484C2F129B132D30018596C /* Assets.xcassets */; };
@@ -17,7 +16,6 @@
 
 /* Begin PBXFileReference section */
 		8462832329B8C6A7004EFC9A /* TurboNavigator */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TurboNavigator; path = ..; sourceTree = "<group>"; };
-		8462832629B90BB9004EFC9A /* ErrorPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorPresenter.swift; sourceTree = "<group>"; };
 		8484C2E529B132D20018596C /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8484C2E829B132D20018596C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8484C2EA29B132D20018596C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,7 +59,6 @@
 			children = (
 				8484C2F629B132D30018596C /* Info.plist */,
 				8484C2E829B132D20018596C /* AppDelegate.swift */,
-				8462832629B90BB9004EFC9A /* ErrorPresenter.swift */,
 				8484C2EA29B132D20018596C /* SceneDelegate.swift */,
 				8484C2F129B132D30018596C /* Assets.xcassets */,
 				8484C2F329B132D30018596C /* LaunchScreen.storyboard */,
@@ -161,7 +158,6 @@
 			files = (
 				8484C2E929B132D20018596C /* AppDelegate.swift in Sources */,
 				8484C2EB29B132D20018596C /* SceneDelegate.swift in Sources */,
-				8462832729B90BB9004EFC9A /* ErrorPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +302,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -335,6 +332,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

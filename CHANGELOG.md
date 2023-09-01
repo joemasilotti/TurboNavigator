@@ -6,6 +6,7 @@
 * Pass a configuration to the web view create block by @seanpdoyle [#41](https://github.com/joemasilotti/TurboNavigator/pull/41)
 * Option to override `sessionDidLoadWebView(_:)` by @yanshiyason [#35](https://github.com/joemasilotti/TurboNavigator/pull/35)
 * Handle `/resume_historical_location` route [#38](https://github.com/joemasilotti/TurboNavigator/pull/38)
+* Automatically handle errors with option to override [#45](https://github.com/joemasilotti/TurboNavigator/pull/45)
 
 ### Breaking changes
 

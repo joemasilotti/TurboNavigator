@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let baseURL = URL(string: "http://localhost:3000")!
     private lazy var turboNavigator = TurboNavigator(delegate: self, pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
-        .server(baseURL.appending(path: "/configuration"))
+        .server(baseURL.appendingPathComponent("/configuration"))
     ])
 
     private func createWindow(in windowScene: UIWindowScene) {
@@ -33,12 +33,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension SceneDelegate: TurboNavigationDelegate {
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        if let errorPresenter = visitable as? ErrorPresenter {
-            errorPresenter.presentError(error) {
-                session.reload()
-            }
-        }
-    }
-}
+extension SceneDelegate: TurboNavigationDelegate {}
