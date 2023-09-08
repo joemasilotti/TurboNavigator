@@ -34,6 +34,7 @@ public protocol TurboNavigationDelegate: AnyObject {
 
     /// Optional. Useful for interacting with the web view after the page loads.
     func sessionDidFinishRequest(_ session: Session)
+    func sessionDidStartRequest(_ session: Session)
 }
 
 public extension TurboNavigationDelegate {
@@ -61,6 +62,7 @@ public extension TurboNavigationDelegate {
     }
 
     func sessionDidFinishRequest(_ session: Session) {}
+    func sessionDidStartRequest(_ session: Session) {}
 
     func sessionDidLoadWebView(_ session: Session) {}
 }
