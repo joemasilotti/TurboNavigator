@@ -26,6 +26,7 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Optional. Implement to become the web view's navigation delegate after the initial cold boot visit is completed.
     /// https://github.com/hotwired/turbo-ios/blob/main/Docs/Overview.md#becoming-the-web-views-navigation-delegate
     func sessionDidLoadWebView(_ session: Session)
+    func sessionDidStartRequest(_ session: Session)
 }
 
 public extension TurboNavigationDelegate {
@@ -55,4 +56,5 @@ public extension TurboNavigationDelegate {
     }
 
     func sessionDidLoadWebView(_ session: Session) {}
+    func sessionDidStartRequest(_ session: Session) {}
 }

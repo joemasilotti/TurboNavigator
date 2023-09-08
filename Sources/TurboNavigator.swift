@@ -232,4 +232,8 @@ extension TurboNavigator: SessionDelegate {
         session.webView.navigationDelegate = session
         delegate.sessionDidLoadWebView(session)
     }
+
+    public func sessionDidStartRequest(_ session: Session) {
+        delegate.sessionDidStartRequest(session)
+    }
 }
