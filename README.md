@@ -4,7 +4,7 @@ A drop-in class for [Turbo Native](https://github.com/hotwired/turbo-ios) apps t
 
 > Note: This package is still being actively developed and subject to breaking changes without warning.
 
-![Artboard](https://user-images.githubusercontent.com/2092156/222941287-a7695d4a-b99c-4740-8b55-a20c1c777f9d.png)
+![Turbo Navigator screenshot demo](.github/images/demo.png)
 
 ## Why use this?
 
@@ -179,9 +179,43 @@ To hook into the "refresh" [turbo-rails native route](https://github.com/hotwire
 
 ## Getting started
 
-Check out the Demo app for an example on how to use Turbo Navigator.
+First, create a new Xcode project using the iOS App template.
 
-More detailed instructions are coming soon. [PRs are welcome](https://github.com/joemasilotti/TurboNavigator/issues/1)!
+![New Xcode project](.github/images/new-xcode-project.png)
+
+Then add the Turbo Navigator Swift package.
+
+1. In Xcode, File → Add Packages…
+1. Enter the following URL in the upper right: `https://github.com/joemasilotti/TurboNavigator`
+1. Click Add Package
+1. Click Add Package again
+
+![Add package](.github/images/add-package.png)
+
+Replace `SceneDelegate.swift` with the following.
+
+```swift
+import TurboNavigator
+import UIKit
+
+let rootURL = URL(string: "http://localhost:3000")!
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    private let navigationController = UINavigationController()
+    private lazy var navigator = TurboNavigator(delegate: self, navigationController: navigationController)
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        window?.rootViewController = navigationController
+        navigator.route(rootURL)
+    }
+}
+
+extension SceneDelegate: TurboNavigationDelegate {}
+```
+
+Start the [demo Rails server](Demo/Server) then run the iOS app in Xcode via Product → Run.
 
 ## Demo project
 
