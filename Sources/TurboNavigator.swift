@@ -4,9 +4,19 @@ import UIKit
 import WebKit
 
 /// Handles navigation to new URLs using the following rules:
-/// https://masilotti.notion.site/Turbo-Native-iOS-navigation-4fd3dc638c3e4d2cab7ec5582656cbbb
+/// https://github.com/joemasilotti/TurboNavigator#handled-flows
 public class TurboNavigator {
-    public init(delegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil, navigationController: UINavigationController = UINavigationController(), modalNavigationController: UINavigationController = UINavigationController()) {
+    /// Default initializer.
+    /// - Parameters:
+    ///   - delegate: handle custom controller routing
+    ///   - pathConfiguration: assigned to internal `Session` instances for custom configuration
+    ///   - navigationController: optional: override the main navigation stack
+    ///   - modalNavigationController: optional: override the modal navigation stack
+    public init(delegate: TurboNavigationDelegate,
+                pathConfiguration: PathConfiguration? = nil,
+                navigationController: UINavigationController = UINavigationController(),
+                modalNavigationController: UINavigationController = UINavigationController())
+    {
         self.session = Session(webView: TurboConfig.shared.makeWebView())
         self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
         self.delegate = delegate
@@ -17,6 +27,28 @@ public class TurboNavigator {
         modalSession.delegate = self
         session.pathConfiguration = pathConfiguration
         modalSession.pathConfiguration = pathConfiguration
+    }
+
+    /// Provide `Turbo.Session` instances with preconfigured path configurations and delegates.
+    /// Note that TurboNavigationDelegate.controller(_:forProposal:) will no longer be called.
+    /// - Parameters:
+    ///   - preconfiguredMainSession: a session whose delegate is not `TurboNavigator`
+    ///   - preconfiguredModalSession: a session whose delegate is not `TurboNavigator`
+    ///   - delegate: handle non-routing behavior, like custom error handling
+    ///   - navigationController: optional: override the main navigation stack
+    ///   - modalNavigationController: optional: override the modal navigation stack
+    public init(preconfiguredMainSession: Turbo.Session,
+                preconfiguredModalSession: Turbo.Session,
+                delegate: TurboNavigationDelegate,
+                navigationController: UINavigationController = UINavigationController(),
+                modalNavigationController: UINavigationController = UINavigationController())
+    {
+        self.session = preconfiguredMainSession
+        self.modalSession = preconfiguredModalSession
+        self.navigationController = navigationController
+        self.modalNavigationController = modalNavigationController
+
+        self.delegate = delegate
     }
 
     public var rootViewController: UIViewController { navigationController }
