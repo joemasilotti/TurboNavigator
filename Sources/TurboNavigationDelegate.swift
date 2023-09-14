@@ -10,9 +10,14 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// Respond to authentication challenge presented by web servers behing basic auth.
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 
-    /// Optional. Implement to override or customize the controller to be displayed.
-    /// Return `nil` to not display or route anything.
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController?
+    /// Optional. Allow or cancel a visit.
+    /// If allowed, you may provide a view controller to be displayed, otherwise a new `VisitableViewController` is used.
+    /// If rejected, no changes to navigation occur.
+    /// If not implemented, proposals are accepted and a new `VisitableViewController` is displayed.
+    ///
+    /// - Parameter proposal: navigation destination
+    /// - Returns: how to react to the visit proposal
+    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse
 
     /// Optional. An error occurred loading the request, present it to the user.
     /// Retry the request by executing the closure.
@@ -29,9 +34,8 @@ public protocol TurboNavigationDelegate: AnyObject {
 }
 
 public extension TurboNavigationDelegate {
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
-        VisitableViewController(url: proposal.url)
-    }
+    
+    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse { .acceptWithVisitableViewController }
 
     func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
         if let errorPresenter = visitable as? ErrorPresenter {
@@ -55,4 +59,10 @@ public extension TurboNavigationDelegate {
     }
 
     func sessionDidLoadWebView(_ session: Session) {}
+}
+
+public enum VisitProposalResponse : Equatable {
+    case acceptWithVisitableViewController
+    case acceptWithCustom(UIViewController)
+    case reject
 }
