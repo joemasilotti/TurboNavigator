@@ -77,6 +77,19 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
         assertVisited(url: proposal.url, on: .main)
     }
+    
+    func test_default_default_default_visitProposalResponseCancelsNavigation() {
+        let topViewController = UIViewController()
+        navigationController.pushViewController(topViewController, animated: false)
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+
+        let proposal = VisitProposal(path: "/cancel")
+        navigator.route(proposal)
+
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssert(navigationController.topViewController == topViewController)
+        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
+    }
 
     func test_default_modal_default_presentsModal() {
         let proposal = VisitProposal(context: .modal)
@@ -271,6 +284,14 @@ final class TurboNavigatorTests: XCTestCase {
 
 private class EmptyDelegate: TurboNavigationDelegate {
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
+    
+    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse {
+        if proposal.url.path == "/cancel" {
+            return .reject
+        }
+        
+        return .acceptWithVisitableViewController
+    }
 }
 
 // MARK: - VisitProposal extension
@@ -290,11 +311,13 @@ private extension VisitProposal {
 // MARK: - AlertControllerDelegate
 
 private class AlertControllerDelegate: TurboNavigationDelegate {
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+    
+    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse {
         if proposal.url.path == "/alert" {
-            return UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
+            return .acceptWithCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
         }
-        return controller
+        
+        return .acceptWithVisitableViewController
     }
 
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}

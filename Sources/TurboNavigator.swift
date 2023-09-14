@@ -70,8 +70,17 @@ public class TurboNavigator {
     private unowned let delegate: TurboNavigationDelegate
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
-        let defaultController = VisitableViewController(url: proposal.url)
-        return delegate.controller(defaultController, forProposal: proposal)
+        switch delegate.response(forProposal: proposal) {
+            
+        case .acceptWithVisitableViewController:
+            return VisitableViewController(url: proposal.url)
+            
+        case .acceptWithCustom(let customViewController):
+            return customViewController
+            
+        case .reject:
+            return nil
+        }
     }
 
     private func presentAlert(_ alert: UIAlertController) {
