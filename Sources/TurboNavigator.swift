@@ -6,6 +6,30 @@ import WebKit
 /// Handles navigation to new URLs using the following rules:
 /// https://masilotti.notion.site/Turbo-Native-iOS-navigation-4fd3dc638c3e4d2cab7ec5582656cbbb
 public class TurboNavigator {
+    
+    /// Allows the caller to provide a `Turbo.Session` that already has a path configuration and a delegate.
+    ///
+    /// - Parameters:
+    ///   - preconfiguredMainSession: a session whose delegate is not `TurboNavigator`
+    ///   - preconfiguredModalSession: a session whose delegate is not `TurboNavigator`
+    ///   - mainNavController: main navigation stack
+    ///   - modalNavController: modal navigation stack
+    ///   - delegate: notified as needed
+    public init(preconfiguredMainSession: Turbo.Session,
+                preconfiguredModalSession: Turbo.Session,
+                mainNavController: UINavigationController = UINavigationController(),
+                modalNavController: UINavigationController = UINavigationController(),
+                delegate: TurboNavigationDelegate) {
+        
+        self.session = preconfiguredMainSession
+        self.navigationController = mainNavController
+        
+        self.modalSession = preconfiguredModalSession
+        self.modalNavigationController = modalNavController
+        
+        self.delegate = delegate
+    }
+    
     public init(delegate: TurboNavigationDelegate, pathConfiguration: PathConfiguration? = nil, navigationController: UINavigationController = UINavigationController(), modalNavigationController: UINavigationController = UINavigationController()) {
         self.session = Session(webView: TurboConfig.shared.makeWebView())
         self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
