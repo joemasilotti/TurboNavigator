@@ -4,7 +4,7 @@ import UIKit
 import WebKit
 
 /// Handles navigation to new URLs using the following rules:
-/// https://github.com/joemasilotti/TurboNavigator
+/// https://github.com/joemasilotti/TurboNavigator#handled-flows
 public class TurboNavigator {
     /// Default initializer.
     /// - Parameters:
