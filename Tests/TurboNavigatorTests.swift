@@ -77,19 +77,6 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(navigationController.viewControllers.last is VisitableViewController)
         assertVisited(url: proposal.url, on: .main)
     }
-    
-    func test_default_default_default_visitProposalResponseCancelsNavigation() {
-        let topViewController = UIViewController()
-        navigationController.pushViewController(topViewController, animated: false)
-        XCTAssertEqual(navigationController.viewControllers.count, 2)
-
-        let proposal = VisitProposal(path: "/cancel")
-        navigator.route(proposal)
-
-        XCTAssertEqual(navigationController.viewControllers.count, 2)
-        XCTAssert(navigationController.topViewController == topViewController)
-        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
-    }
 
     func test_default_modal_default_presentsModal() {
         let proposal = VisitProposal(context: .modal)
@@ -243,6 +230,19 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(VisitProposal(path: "/alert"))
 
         XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
+    }
+    
+    func test_none_visitProposalResponseCancelsNavigation() {
+        let topViewController = UIViewController()
+        navigationController.pushViewController(topViewController, animated: false)
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+
+        let proposal = VisitProposal(path: "/cancel")
+        navigator.route(proposal)
+
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssert(navigationController.topViewController == topViewController)
+        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
     }
 
     // MARK: Private
