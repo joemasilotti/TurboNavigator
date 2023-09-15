@@ -102,7 +102,7 @@ public class TurboNavigator {
     private unowned let delegate: TurboNavigationDelegate
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
-        switch delegate.handle(proposal: proposal) {
+        switch delegate.handle(proposal: proposal, navigator: self) {
             
         case .accept:
             return VisitableViewController(url: proposal.url)

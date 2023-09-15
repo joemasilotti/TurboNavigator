@@ -283,9 +283,17 @@ final class TurboNavigatorTests: XCTestCase {
 // MARK: - TurboNavigationDelegate
 
 private class TestNavigationDelegate: TurboNavigationDelegate {
+    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) { }
+    
+    func visitableDidFailRequest(_ visitable: Turbo.Visitable, error: Error, retry: @escaping RetryBlock) { }
+    
+    func openExternalURL(_ url: URL, from controller: UIViewController) { }
+    
+    func sessionDidLoadWebView(_ session: Turbo.Session) { }
+    
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
     
-    func handle(proposal: VisitProposal) -> ProposalResult {
+    func handle(proposal: VisitProposal, navigator: TurboNavigator) -> ProposalResult {
         if proposal.url.path == "/cancel" {
             return .reject
         }
@@ -311,8 +319,15 @@ private extension VisitProposal {
 // MARK: - AlertControllerDelegate
 
 private class AlertControllerDelegate: TurboNavigationDelegate {
+    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) { }
     
-    func handle(proposal: VisitProposal) -> ProposalResult {
+    func visitableDidFailRequest(_ visitable: Turbo.Visitable, error: Error, retry: @escaping RetryBlock) {}
+    
+    func openExternalURL(_ url: URL, from controller: UIViewController) { }
+    
+    func sessionDidLoadWebView(_ session: Turbo.Session) { }
+
+    func handle(proposal: VisitProposal, navigator: TurboNavigator) -> ProposalResult {
         if proposal.url.path == "/alert" {
             return .acceptCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
         }
@@ -320,5 +335,5 @@ private class AlertControllerDelegate: TurboNavigationDelegate {
         return .accept
     }
 
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
+    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) { }
 }

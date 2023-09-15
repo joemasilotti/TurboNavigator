@@ -3,20 +3,20 @@ import Turbo
 @testable import TurboNavigator
 import XCTest
 
-final class TurboNavigationDelegateTests: XCTestCase {
+final class TurboNavigatingCoordinatorTests: XCTestCase {
+    
     func test_controllerForProposal_defaultsToVisitableViewController() throws {
         let url = URL(string: "https://example.com")!
-
-        let response = delegate.handle(proposal: VisitProposal(url: url))
-
-        XCTAssertEqual(response, .accept)
+        coordinator.rootNavigator.route(url)
+        XCTAssert(coordinator.rootNavigator.navigationController.viewControllers.count == 1)
+        XCTAssertNotNil(coordinator.rootNavigator.navigationController.viewControllers.first as? VisitableViewController)
     }
 
     func test_openExternalURL_presentsSafariViewController() throws {
         let url = URL(string: "https://example.com")!
         let controller = TestableNavigationController()
 
-        delegate.openExternalURL(url, from: controller)
+        coordinator.openExternalURL(url, from: controller)
 
         XCTAssert(controller.presentedViewController is SFSafariViewController)
         XCTAssertEqual(controller.modalPresentationStyle, .pageSheet)
@@ -24,13 +24,7 @@ final class TurboNavigationDelegateTests: XCTestCase {
 
     // MARK: Private
 
-    private let delegate = DefaultDelegate()
-}
-
-// MARK: - DefaultDelegate
-
-private class DefaultDelegate: TurboNavigationDelegate {
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
+    private let coordinator = TurboNavigatingCoordinator()
 }
 
 // MARK: - VisitProposal extension

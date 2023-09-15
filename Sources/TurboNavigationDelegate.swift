@@ -16,8 +16,9 @@ public protocol TurboNavigationDelegate: AnyObject {
     /// If not implemented, proposals are accepted and a new `VisitableViewController` is displayed.
     ///
     /// - Parameter proposal: navigation destination
+    /// - Parameter navigator: the navigator proposing the visit
     /// - Returns: how to react to the visit proposal
-    func handle(proposal: VisitProposal) -> ProposalResult
+    func handle(proposal: VisitProposal, navigator: TurboNavigator) -> ProposalResult
 
     /// Optional. An error occurred loading the request, present it to the user.
     /// Retry the request by executing the closure.
