@@ -1,0 +1,9 @@
+{
+  "settings": {},
+  "rules": [
+    {
+      "patterns": ["/cancel"],
+      "properties": {"presentation": "none"}
+    }
+  ]
+}

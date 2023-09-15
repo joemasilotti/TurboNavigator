@@ -12,6 +12,7 @@ final class TurboNavigatorTests: XCTestCase {
 
         navigator = TurboNavigator(
             delegate: delegate,
+            pathConfiguration: pathConfiguration,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
         )
@@ -237,12 +238,13 @@ final class TurboNavigatorTests: XCTestCase {
         navigationController.pushViewController(topViewController, animated: false)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
 
-        let proposal = VisitProposal(path: "/cancel")
-        navigator.route(proposal)
+        // Route a URL, not VisitProposal, so the path configuration sets the properties.
+        let url = URL(string: "https://example.com/cancel")!
+        navigator.route(url)
 
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         XCTAssert(navigationController.topViewController == topViewController)
-        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
+        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, url)
     }
 
     // MARK: Private
@@ -252,10 +254,13 @@ final class TurboNavigatorTests: XCTestCase {
     }
 
     private var navigator: TurboNavigator!
-    private let delegate = TestNavigationDelegate()
+    private let delegate = EmptyNavigationDelegate()
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
     private let window = UIWindow()
+    private let pathConfiguration = PathConfiguration(sources: [
+        .file(Bundle.module.url(forResource: "path-configuration", withExtension: "json")!)
+    ])
 
     // Set an initial controller to simulate a populated navigation stack.
     private func pushInitialViewControllersOnNavigationController() {
@@ -280,19 +285,9 @@ final class TurboNavigatorTests: XCTestCase {
     }
 }
 
-// MARK: - TurboNavigationDelegate
+// MARK: - EmptyNavigationDelegate
 
-private class TestNavigationDelegate: TurboNavigationDelegate {
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
-
-    func handle(proposal: VisitProposal) -> ProposalResult {
-        if proposal.url.path == "/cancel" {
-            return .reject
-        }
-
-        return .accept
-    }
-}
+private class EmptyNavigationDelegate: TurboNavigationDelegate {}
 
 // MARK: - VisitProposal extension
 
