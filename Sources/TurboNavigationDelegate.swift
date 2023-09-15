@@ -34,7 +34,6 @@ public protocol TurboNavigationDelegate: AnyObject {
 }
 
 public extension TurboNavigationDelegate {
-    
     func handle(proposal: VisitProposal) -> ProposalResult { .accept }
 
     func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {

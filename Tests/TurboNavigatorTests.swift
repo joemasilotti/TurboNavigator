@@ -231,7 +231,7 @@ final class TurboNavigatorTests: XCTestCase {
 
         XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
     }
-    
+
     func test_none_visitProposalResponseCancelsNavigation() {
         let topViewController = UIViewController()
         navigationController.pushViewController(topViewController, animated: false)
@@ -284,12 +284,12 @@ final class TurboNavigatorTests: XCTestCase {
 
 private class TestNavigationDelegate: TurboNavigationDelegate {
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
-    
+
     func handle(proposal: VisitProposal) -> ProposalResult {
         if proposal.url.path == "/cancel" {
             return .reject
         }
-        
+
         return .accept
     }
 }
@@ -311,12 +311,11 @@ private extension VisitProposal {
 // MARK: - AlertControllerDelegate
 
 private class AlertControllerDelegate: TurboNavigationDelegate {
-    
     func handle(proposal: VisitProposal) -> ProposalResult {
         if proposal.url.path == "/alert" {
             return .acceptCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
         }
-        
+
         return .accept
     }
 
