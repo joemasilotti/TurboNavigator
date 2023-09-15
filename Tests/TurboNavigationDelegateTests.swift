@@ -9,7 +9,7 @@ final class TurboNavigationDelegateTests: XCTestCase {
 
         let response = delegate.response(forProposal: VisitProposal(url: url))
 
-        XCTAssertEqual(response, .acceptWithVisitableViewController)
+        XCTAssertEqual(response, .accept)
     }
 
     func test_openExternalURL_presentsSafariViewController() throws {

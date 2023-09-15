@@ -17,7 +17,7 @@ public protocol TurboNavigationDelegate: AnyObject {
     ///
     /// - Parameter proposal: navigation destination
     /// - Returns: how to react to the visit proposal
-    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse
+    func response(forProposal proposal: VisitProposal) -> ProposalResult
 
     /// Optional. An error occurred loading the request, present it to the user.
     /// Retry the request by executing the closure.
@@ -35,7 +35,7 @@ public protocol TurboNavigationDelegate: AnyObject {
 
 public extension TurboNavigationDelegate {
     
-    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse { .acceptWithVisitableViewController }
+    func response(forProposal proposal: VisitProposal) -> ProposalResult { .accept }
 
     func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
         if let errorPresenter = visitable as? ErrorPresenter {
@@ -61,8 +61,14 @@ public extension TurboNavigationDelegate {
     func sessionDidLoadWebView(_ session: Session) {}
 }
 
-public enum VisitProposalResponse : Equatable {
-    case acceptWithVisitableViewController
-    case acceptWithCustom(UIViewController)
+/// Return from `handle(proposal:)` to route a custom controller.
+public enum ProposalResult : Equatable {
+    /// Route a `VisitableViewController`.
+    case accept
+    
+    /// Route a custom `UIViewController` or subclass
+    case acceptCustom(UIViewController)
+
+    /// Do not route. Navigation is not modified.
     case reject
 }

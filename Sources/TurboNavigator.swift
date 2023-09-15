@@ -72,10 +72,10 @@ public class TurboNavigator {
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         switch delegate.response(forProposal: proposal) {
             
-        case .acceptWithVisitableViewController:
+        case .accept:
             return VisitableViewController(url: proposal.url)
             
-        case .acceptWithCustom(let customViewController):
+        case .acceptCustom(let customViewController):
             return customViewController
             
         case .reject:

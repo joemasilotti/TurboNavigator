@@ -285,12 +285,12 @@ final class TurboNavigatorTests: XCTestCase {
 private class TestNavigationDelegate: TurboNavigationDelegate {
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
     
-    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse {
+    func response(forProposal proposal: VisitProposal) -> ProposalResult {
         if proposal.url.path == "/cancel" {
             return .reject
         }
         
-        return .acceptWithVisitableViewController
+        return .accept
     }
 }
 
@@ -312,12 +312,12 @@ private extension VisitProposal {
 
 private class AlertControllerDelegate: TurboNavigationDelegate {
     
-    func response(forProposal proposal: VisitProposal) -> VisitProposalResponse {
+    func response(forProposal proposal: VisitProposal) -> ProposalResult {
         if proposal.url.path == "/alert" {
-            return .acceptWithCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
+            return .acceptCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
         }
         
-        return .acceptWithVisitableViewController
+        return .accept
     }
 
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
