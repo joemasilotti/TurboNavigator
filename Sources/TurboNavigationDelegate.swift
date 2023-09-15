@@ -33,34 +33,6 @@ public protocol TurboNavigationDelegate: AnyObject {
     func sessionDidLoadWebView(_ session: Session)
 }
 
-public extension TurboNavigationDelegate {
-    
-    func handle(proposal: VisitProposal) -> ProposalResult { .accept }
-
-    func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
-        if let errorPresenter = visitable as? ErrorPresenter {
-            errorPresenter.presentError(error) {
-                retry()
-            }
-        }
-    }
-
-    func openExternalURL(_ url: URL, from controller: UIViewController) {
-        let safariViewController = SFSafariViewController(url: url)
-        safariViewController.modalPresentationStyle = .pageSheet
-        if #available(iOS 15.0, *) {
-            safariViewController.preferredControlTintColor = .tintColor
-        }
-        controller.present(safariViewController, animated: true)
-    }
-
-    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        completionHandler(.performDefaultHandling, nil)
-    }
-
-    func sessionDidLoadWebView(_ session: Session) {}
-}
-
 /// Return from `handle(proposal:)` to route a custom controller.
 public enum ProposalResult : Equatable {
     /// Route a `VisitableViewController`.
