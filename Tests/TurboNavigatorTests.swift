@@ -252,7 +252,7 @@ final class TurboNavigatorTests: XCTestCase {
     }
 
     private var navigator: TurboNavigator!
-    private let delegate = EmptyDelegate()
+    private let delegate = TestNavigationDelegate()
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
     private let window = UIWindow()
@@ -282,7 +282,7 @@ final class TurboNavigatorTests: XCTestCase {
 
 // MARK: - TurboNavigationDelegate
 
-private class EmptyDelegate: TurboNavigationDelegate {
+private class TestNavigationDelegate: TurboNavigationDelegate {
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
     
     func response(forProposal proposal: VisitProposal) -> VisitProposalResponse {
