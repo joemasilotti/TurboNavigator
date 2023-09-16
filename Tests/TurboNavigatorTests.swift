@@ -12,7 +12,6 @@ final class TurboNavigatorTests: XCTestCase {
 
         navigator = TurboNavigator(
             delegate: delegate,
-            pathConfiguration: pathConfiguration,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
         )
@@ -233,18 +232,17 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
     }
 
-    func test_none_visitProposalResponseCancelsNavigation() {
+    func test_none_cancelsNavigation() {
         let topViewController = UIViewController()
         navigationController.pushViewController(topViewController, animated: false)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
 
-        // Route a URL, not VisitProposal, so the path configuration sets the properties.
-        let url = URL(string: "https://example.com/cancel")!
-        navigator.route(url)
+        let proposal = VisitProposal(path: "/cancel", presentation: .none)
+        navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         XCTAssert(navigationController.topViewController == topViewController)
-        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, url)
+        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
     }
 
     // MARK: Private
@@ -258,9 +256,6 @@ final class TurboNavigatorTests: XCTestCase {
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
     private let window = UIWindow()
-    private let pathConfiguration = PathConfiguration(sources: [
-        .file(Bundle.module.url(forResource: "path-configuration", withExtension: "json")!)
-    ])
 
     // Set an initial controller to simulate a populated navigation stack.
     private func pushInitialViewControllersOnNavigationController() {

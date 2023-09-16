@@ -27,10 +27,7 @@ let package = Package(
         .testTarget(
             name: "TurboNavigatorTests",
             dependencies: ["TurboNavigator"],
-            path: "Tests",
-            resources: [
-                .copy("path-configuration.json")
-            ]
+            path: "Tests"
         )
     ]
 )
