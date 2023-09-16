@@ -232,6 +232,19 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssert(modalNavigationController.presentedViewController is UIAlertController)
     }
 
+    func test_none_cancelsNavigation() {
+        let topViewController = UIViewController()
+        navigationController.pushViewController(topViewController, animated: false)
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+
+        let proposal = VisitProposal(path: "/cancel", presentation: .none)
+        navigator.route(proposal)
+
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssert(navigationController.topViewController == topViewController)
+        XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
+    }
+
     // MARK: Private
 
     private enum Context {
@@ -239,7 +252,7 @@ final class TurboNavigatorTests: XCTestCase {
     }
 
     private var navigator: TurboNavigator!
-    private let delegate = EmptyDelegate()
+    private let delegate = EmptyNavigationDelegate()
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
     private let window = UIWindow()
@@ -267,11 +280,9 @@ final class TurboNavigatorTests: XCTestCase {
     }
 }
 
-// MARK: - TurboNavigationDelegate
+// MARK: - EmptyNavigationDelegate
 
-private class EmptyDelegate: TurboNavigationDelegate {
-    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}
-}
+private class EmptyNavigationDelegate: TurboNavigationDelegate {}
 
 // MARK: - VisitProposal extension
 
@@ -290,11 +301,12 @@ private extension VisitProposal {
 // MARK: - AlertControllerDelegate
 
 private class AlertControllerDelegate: TurboNavigationDelegate {
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
+    func handle(proposal: VisitProposal) -> ProposalResult {
         if proposal.url.path == "/alert" {
-            return UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
+            return .acceptCustom(UIAlertController(title: "Alert", message: nil, preferredStyle: .alert))
         }
-        return controller
+
+        return .accept
     }
 
     func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {}

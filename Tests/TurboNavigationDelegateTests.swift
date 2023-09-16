@@ -7,10 +7,9 @@ final class TurboNavigationDelegateTests: XCTestCase {
     func test_controllerForProposal_defaultsToVisitableViewController() throws {
         let url = URL(string: "https://example.com")!
 
-        let controller = delegate.controller(VisitableViewController(), forProposal: VisitProposal(url: url))
+        let result = delegate.handle(proposal: VisitProposal(url: url))
 
-        let visitableViewController = try XCTUnwrap(controller as? VisitableViewController)
-        XCTAssertEqual(visitableViewController.visitableURL, url)
+        XCTAssertEqual(result, .accept)
     }
 
     func test_openExternalURL_presentsSafariViewController() throws {
