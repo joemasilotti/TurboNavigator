@@ -1,7 +1,7 @@
 import Foundation
 import Turbo
 
-protocol TurboNavigatingCoordinatorDelegate : AnyObject {
+public protocol TurboNavigatingCoordinatorDelegate : AnyObject {
     
     /// Allows a requested `VisitProposal` to be routed to another `TurboNavigator`.
     ///
@@ -16,7 +16,7 @@ protocol TurboNavigatingCoordinatorDelegate : AnyObject {
 }
 
 /// Return from `reroute(proposal:from:coordinator:)` to reroute `VisitProposal`, if needed.
-enum VisitProposalRoute {
+public enum VisitProposalRoute {
     case follow(ProposalResult)
     case reroute(TurboNavigator)
 }

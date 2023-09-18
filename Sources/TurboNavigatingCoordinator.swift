@@ -2,20 +2,35 @@ import UIKit
 import Turbo
 import SafariServices
 
+/// Allows communication between different `TurboNavigator`s.
 public class TurboNavigatingCoordinator : TurboNavigationDelegate {
     
     public private(set) var navigators: [TurboNavigator]
     
+    /// Convenience: Returns the first navigator.
     public var rootNavigator: TurboNavigator { navigators.first! }
     
-    weak var delegate: TurboNavigatingCoordinatorDelegate?
+    public weak var delegate: TurboNavigatingCoordinatorDelegate?
     
-    public init() {
+    /// After initialization, `navigators` will always have at least 1 `TurboNavigator`.
+    ///
+    /// - Parameter rootNavigator: the first navigator, if given
+    public init(rootNavigator: TurboNavigator? = nil) {
         navigators = []
-        navigators.append(TurboNavigator(delegate: self))
+        
+        if let rootNavigator {
+            navigators.append(rootNavigator)
+        } else {
+            navigators.append(TurboNavigator(delegate: self))
+        }
+    }
+    
+    public func replaceRootNavigator(with newRootNavigator: TurboNavigator) {
+        navigators[0] = newRootNavigator
     }
 }
 
+// MARK: TurboNavigationDelegate
 public extension TurboNavigatingCoordinator {
     
     func handle(proposal: VisitProposal, navigator: TurboNavigator) -> ProposalResult {
