@@ -15,4 +15,12 @@ public extension VisitProposal {
         }
         return .default
     }
+    
+    var viewController: String {
+        if let viewController = properties["view-controller"] as? String {
+            return viewController
+        }
+        
+        return "VisitableViewController"
+    }
 }
