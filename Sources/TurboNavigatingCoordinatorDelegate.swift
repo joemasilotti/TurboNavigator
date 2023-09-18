@@ -17,6 +17,6 @@ public protocol TurboNavigatingCoordinatorDelegate : AnyObject {
 
 /// Return from `reroute(proposal:from:coordinator:)` to reroute `VisitProposal`, if needed.
 public enum VisitProposalRoute {
-    case follow(ProposalResult)
+    case `continue`(ProposalResult)
     case reroute(TurboNavigator)
 }

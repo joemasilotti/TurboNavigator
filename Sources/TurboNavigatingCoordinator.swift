@@ -41,7 +41,7 @@ public extension TurboNavigatingCoordinator {
                                 from: navigator,
                                 coordinator: self) {
             
-        case .follow(let result):
+        case .continue(let result):
             return result
             
         case .reroute(let newNavigator):
