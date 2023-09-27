@@ -21,6 +21,6 @@ public extension VisitProposal {
             return viewController
         }
         
-        return "VisitableViewController"
+        return VisitableViewController.pathConfigurationIdentifier
     }
 }
