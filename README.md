@@ -261,7 +261,7 @@ class MyCustomClass: TurboNavigationDelegate {
 }
 ```
 
-If you're relying on the "view-controller" property, we recommend your view controllers conform to `PathConfigurationIdentifiable`.
+If you're relying on the "view-controller" property, we recommend your view controllers conform to `PathConfigurationIdentifiable`. You should also avoid using the class name as identifier, as that may change over time.
 
 ```swift
 class NumbersViewController: UIViewController, PathConfigurationIdentifiable {
