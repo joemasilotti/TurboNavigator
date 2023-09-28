@@ -16,6 +16,29 @@ public extension VisitProposal {
         return .default
     }
     
+    /// Used to identify a custom native view controller if provided in the path configuration properties of a given pattern.
+    ///
+    /// For example, given the following configuration file:
+    ///
+    /// ```
+    /// {
+    ///   "rules": [
+    ///     {
+    ///       "patterns": [
+    ///         "/recipes/*"
+    ///       ],
+    ///
+    ///       "properties": {
+    ///         "view-controller": "RecipeViewController",
+    ///       }
+    ///     },
+    ///  ]
+    /// }
+    /// ```
+    ///
+    /// A VisitProposal to `https://example.com/recipes/` will have `proposal.viewController == "RecipeViewController"`
+    /// 
+    /// A default value is provided in case the view controller property is missing from the configuration file.
     var viewController: String {
         if let viewController = properties["view-controller"] as? String {
             return viewController
