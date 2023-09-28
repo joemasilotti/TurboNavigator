@@ -245,7 +245,8 @@ class MyCustomClass: TurboNavigationDelegate {
     let navigator = TurboNavigator(delegate: self)
 
     func handle(proposal: VisitProposal) -> ProposalResult {
-        if proposal.url.path == "/numbers" || proposal.viewController == "numbers" {
+        if proposal.url.path == "/numbers" ||
+           proposal.viewController == "numbers" {
             // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
         } else if proposal.presentation == .clearAll {
@@ -272,7 +273,8 @@ class MyCustomClass: TurboNavigationDelegate {
     let navigator = TurboNavigator(delegate: self)
     
     func handle(proposal: VisitProposal) -> ProposalResult {
-        if proposal.url.path == "/numbers" || proposal.viewController == NumbersViewController.pathConfigurationIdentifier {
+        if proposal.url.path == "/numbers" ||
+           proposal.viewController == NumbersViewController.pathConfigurationIdentifier {
             // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
         } else ... 
