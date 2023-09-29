@@ -227,14 +227,25 @@ It shows off most of the navigation flows outlined above. There is also an examp
 
 You can also implement an optional method on the `TurboNavigationDelegate` to handle custom routing.
 
-This is useful to break out of the default behavior and/or render a native screen.
+This is useful to break out of the default behavior and/or render a native screen. You may inspect the provided proposal and decide routing based on any of its properties. For custom native screens, you may also include a `"view-controller"` property that will be passed along.
+
+```json
+{
+  "patterns": [
+    "/numbers$"
+  ],
+  "properties": {
+    "view-controller": "numbers"
+  }
+}
+```
 
 ```swift
 class MyCustomClass: TurboNavigationDelegate {
     let navigator = TurboNavigator(delegate: self)
 
-    func controller(_ controller: VisitableViewController, forProposal proposal: VisitProposal) -> UIViewController? {
-        if proposal.url.path == "/numbers" {
+    func handle(proposal: VisitProposal) -> ProposalResult {
+        if proposal.viewController == "numbers" {
             // Let Turbo Navigator route this custom controller.
             return NumbersViewController()
         } else if proposal.presentation == .clearAll {
@@ -249,6 +260,27 @@ class MyCustomClass: TurboNavigationDelegate {
     }
 }
 ```
+
+If you're relying on the `"view-controller"` property, we recommend your view controllers conform to `PathConfigurationIdentifiable`. You should also avoid using the class name as identifier, as you might rename your controller in the future.
+
+```swift
+class NumbersViewController: UIViewController, PathConfigurationIdentifiable {
+    static var pathConfigurationIdentifier: String { "numbers" }
+}
+
+class MyCustomClass: TurboNavigationDelegate {
+    let navigator = TurboNavigator(delegate: self)
+    
+    func handle(proposal: VisitProposal) -> ProposalResult {
+        if proposal.viewController == NumbersViewController.pathConfigurationIdentifier {
+            // Let Turbo Navigator route this custom controller.
+            return NumbersViewController()
+        } else ... 
+            ...
+        }
+    }
+}
+``` 
 
 ## Custom configuration
 
