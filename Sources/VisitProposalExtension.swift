@@ -29,16 +29,16 @@ public extension VisitProposal {
     ///       ],
     ///
     ///       "properties": {
-    ///         "view-controller": "RecipeViewController",
+    ///         "view-controller": "recipes",
     ///       }
     ///     },
     ///  ]
     /// }
     /// ```
     ///
-    /// A VisitProposal to `https://example.com/recipes/` will have `proposal.viewController == "RecipeViewController"`
-    /// 
-    /// A default value is provided in case the view controller property is missing from the configuration file.
+    /// A VisitProposal to `https://example.com/recipes/` will have `proposal.viewController == "recipes"`
+    ///
+    /// A default value is provided in case the view controller property is missing from the configuration file. This will route the default `VisitableViewController`.
     var viewController: String {
         if let viewController = properties["view-controller"] as? String {
             return viewController
