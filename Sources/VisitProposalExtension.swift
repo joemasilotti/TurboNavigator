@@ -15,7 +15,7 @@ public extension VisitProposal {
         }
         return .default
     }
-    
+
     /// Used to identify a custom native view controller if provided in the path configuration properties of a given pattern.
     ///
     /// For example, given the following configuration file:
@@ -27,11 +27,10 @@ public extension VisitProposal {
     ///       "patterns": [
     ///         "/recipes/*"
     ///       ],
-    ///
     ///       "properties": {
     ///         "view-controller": "recipes",
     ///       }
-    ///     },
+    ///     }
     ///  ]
     /// }
     /// ```
@@ -43,7 +42,7 @@ public extension VisitProposal {
         if let viewController = properties["view-controller"] as? String {
             return viewController
         }
-        
+
         return VisitableViewController.pathConfigurationIdentifier
     }
 }

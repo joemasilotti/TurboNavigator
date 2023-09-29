@@ -6,16 +6,13 @@ import UIKit
 /// ```
 /// func handle(proposal: VisitProposal) -> ProposalResult {
 ///    switch proposal.viewController {
-///
 ///    case RecipeViewController.pathConfigurationIdentifier:
 ///        return .accept(RecipeViewController.new)
-///
 ///    default:
 ///        return .accept
-///
 ///    }
-///}
+/// }
 /// ```
-public protocol PathConfigurationIdentifiable : UIViewController {
+public protocol PathConfigurationIdentifiable: UIViewController {
     static var pathConfigurationIdentifier: String { get }
 }
