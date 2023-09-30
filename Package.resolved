@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hotwired/turbo-ios",
       "state" : {
-        "revision" : "69ec24c1b132da467da9c388c2ac595ee9e624f6",
-        "version" : "7.0.0"
+        "revision" : "7ce71d4210b077d6e9f1004bbc4c584a580ce594",
+        "version" : "7.0.1"
       }
     }
   ],
