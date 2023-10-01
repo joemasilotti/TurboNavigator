@@ -117,6 +117,11 @@
   resolved "https://registry.yarnpkg.com/@hotwired/stimulus/-/stimulus-3.2.1.tgz#e3de23623b0c52c247aba4cd5d530d257008676b"
   integrity sha512-HGlzDcf9vv/EQrMJ5ZG6VWNs8Z/xMN+1o2OhV1gKiSG6CqZt5MCBB1gRg5ILiN3U0jEAxuDTNPRfBcnZBDmupQ==
 
+"@hotwired/strada@^1.0.0-beta1":
+  version "1.0.0-beta1"
+  resolved "https://registry.yarnpkg.com/@hotwired/strada/-/strada-1.0.0-beta1.tgz#95506e76d77cab389eb4315845673f5e8a758802"
+  integrity sha512-3J9Rc/qnWvnTnl9zD4l2ZHQQ3QbZANiKCh+AiYW2Lak+7JHx/U0AU+eoA4QDVlVylNFmKbxo3HTLCjEx9txqjA==
+
 "@hotwired/turbo-rails@^7.3.0":
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/@hotwired/turbo-rails/-/turbo-rails-7.3.0.tgz#422c21752509f3edcd6c7b2725bbe9e157815f51"

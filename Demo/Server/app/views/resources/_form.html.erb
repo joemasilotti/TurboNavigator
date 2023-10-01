@@ -1,4 +1,4 @@
-<%= form_with(model: resource, class: "row g-3", data: {"turbo-action": (resource.persisted? ? "replace" : "advance")}) do |form| %>
+<%= form_with(model: resource, class: "row g-3", data: {"turbo-action": (resource.persisted? ? "replace" : "advance"), controller: "bridge--form"}) do |form| %>
   <% if resource.errors.any? %>
     <div class="alert alert-danger" role="alert">
       <p class="alert-heading fw-semibold mb-1"><%= pluralize(resource.errors.count, "error") %> prohibited this resource from being saved:</p>
@@ -21,7 +21,6 @@
   </div>
 
   <div class="col-12">
-    <%= form.submit (resource.persisted? ? "Update resource" : "Create resource"), class: "btn btn-primary" %>
+    <%= form.submit "Save", class: "btn btn-primary d-turbo-native-none", "data-bridge--form-target": "submit" %>
   </div>
 <% end %>
-

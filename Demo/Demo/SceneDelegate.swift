@@ -18,6 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         self.window?.makeKeyAndVisible()
 
+        TurboConfig.shared.stradaComponentTypes = [FormComponent.self]
+
         self.window?.rootViewController = self.turboNavigator.rootViewController
         self.turboNavigator.route(baseURL)
     }

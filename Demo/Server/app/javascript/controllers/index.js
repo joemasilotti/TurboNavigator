@@ -3,3 +3,6 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from "./application"
+
+import Bridge__FormController from "./bridge/form_controller"
+application.register("bridge--form", Bridge__FormController)
