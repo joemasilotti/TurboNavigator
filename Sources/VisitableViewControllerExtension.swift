@@ -1,5 +1,5 @@
 import Turbo
 
-extension VisitableViewController: PathConfigurationIdentifiable {
+extension TurboWebViewController: PathConfigurationIdentifiable {
     public static var pathConfigurationIdentifier: String { "web" }
 }

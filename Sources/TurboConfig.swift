@@ -1,3 +1,4 @@
+import Strada
 import WebKit
 
 public class TurboConfig {
@@ -5,14 +6,22 @@ public class TurboConfig {
 
     public static let shared = TurboConfig()
 
+    /// Set the class names of your Strada components to generate the correct user agent.
+    public var stradaComponentTypes = [BridgeComponent.Type]()
+
     /// Override to set a custom user agent.
     /// Include "Turbo Native" to use `turbo_native_app?` on your Rails server.
-    public var userAgent = "Turbo Native iOS"
+    public lazy var userAgent = {
+        let stradaSubstring = Strada.userAgentSubstring(for: stradaComponentTypes)
+        return "Turbo Native iOS \(stradaSubstring)"
+    }()
 
     /// Optionally customize the web views used by each Turbo Session.
     /// Ensure you return a new instance each time.
     public var makeCustomWebView: WebViewBlock = { (configuration: WKWebViewConfiguration) in
-        WKWebView(frame: .zero, configuration: configuration)
+        let webView = WKWebView(frame: .zero, configuration: configuration)
+        Bridge.initialize(webView)
+        return webView
     }
 
     // MARK: - Internal

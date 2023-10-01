@@ -43,6 +43,6 @@ public extension VisitProposal {
             return viewController
         }
 
-        return VisitableViewController.pathConfigurationIdentifier
+        return TurboWebViewController.pathConfigurationIdentifier
     }
 }

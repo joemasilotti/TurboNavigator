@@ -11,9 +11,9 @@ public protocol TurboNavigationDelegate: AnyObject {
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 
     /// Optional. Accept or reject a visit proposal.
-    /// If accepted, you may provide a view controller to be displayed, otherwise a new `VisitableViewController` is displayed.
+    /// If accepted, you may provide a view controller to be displayed, otherwise a new `TurboWebViewController` is displayed.
     /// If rejected, no changes to navigation occur.
-    /// If not implemented, proposals are accepted and a new `VisitableViewController` is displayed.
+    /// If not implemented, proposals are accepted and a new `TurboWebViewController` is displayed.
     ///
     /// - Parameter proposal: navigation destination
     /// - Returns: how to react to the visit proposal

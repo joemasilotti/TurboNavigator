@@ -23,12 +23,12 @@ final class TurboNavigatorTests: XCTestCase {
     func test_default_default_default_pushesOnMainStack() {
         navigator.route(VisitProposal(path: "/one"))
         XCTAssertEqual(navigationController.viewControllers.count, 2)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
 
         let proposal = VisitProposal(path: "/two")
         navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 3)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -39,7 +39,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal(path: "/one")
         navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -53,7 +53,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal(path: "/one")
         navigator.route(proposal)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -62,7 +62,7 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 1)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -74,7 +74,7 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(proposal)
 
         XCTAssertEqual(navigationController.viewControllers.count, 2)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -85,7 +85,7 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
         XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .modal)
     }
 
@@ -96,7 +96,7 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertEqual(navigationController.viewControllers.count, 1)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
         XCTAssertIdentical(navigationController.presentedViewController, modalNavigationController)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .modal)
     }
 
@@ -107,7 +107,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal()
         navigator.route(proposal)
         XCTAssertNil(navigationController.presentedViewController)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
         assertVisited(url: proposal.url, on: .main)
     }
@@ -120,7 +120,7 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(proposal)
         XCTAssertNil(navigationController.presentedViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .main)
     }
 
@@ -131,7 +131,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal(path: "/two", context: .modal)
         navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 2)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .modal)
     }
 
@@ -142,7 +142,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal(path: "/two", action: .replace, context: .modal)
         navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .modal)
     }
 
@@ -153,7 +153,7 @@ final class TurboNavigatorTests: XCTestCase {
         let proposal = VisitProposal(path: "/two", context: .modal, presentation: .replace)
         navigator.route(proposal)
         XCTAssertEqual(modalNavigationController.viewControllers.count, 1)
-        XCTAssert(modalNavigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(modalNavigationController.viewControllers.last is TurboWebViewController)
         assertVisited(url: proposal.url, on: .modal)
     }
 
@@ -202,7 +202,7 @@ final class TurboNavigatorTests: XCTestCase {
         navigator.route(VisitProposal(presentation: .replaceRoot))
         XCTAssertNil(navigationController.presentedViewController)
         XCTAssertEqual(navigationController.viewControllers.count, 1)
-        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
+        XCTAssert(navigationController.viewControllers.last is TurboWebViewController)
     }
 
     func test_presentingUIAlertController_doesNotWrapInNavigationController() {

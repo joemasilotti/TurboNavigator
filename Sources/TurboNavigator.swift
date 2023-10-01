@@ -104,7 +104,7 @@ public class TurboNavigator {
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         switch delegate.handle(proposal: proposal) {
         case .accept:
-            return VisitableViewController(url: proposal.url)
+            return TurboWebViewController(url: proposal.url)
         case .acceptCustom(let customViewController):
             return customViewController
         case .reject:
@@ -162,7 +162,7 @@ public class TurboNavigator {
         guard navigationController.viewControllers.count >= 2 else { return false }
 
         let previousController = navigationController.viewControllers[navigationController.viewControllers.count - 2]
-        if let previousVisitable = previousController as? VisitableViewController {
+        if let previousVisitable = previousController as? TurboWebViewController {
             return previousVisitable.visitableURL == url
         }
         return type(of: previousController) == type(of: controller)

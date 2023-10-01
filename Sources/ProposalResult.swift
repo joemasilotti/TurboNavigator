@@ -2,7 +2,7 @@ import UIKit
 
 /// Return from `handle(proposal:)` to route a custom controller.
 public enum ProposalResult: Equatable {
-    /// Route a `VisitableViewController`.
+    /// Route a `TurboWebViewController`.
     case accept
 
     /// Route a custom `UIViewController` or subclass
