@@ -266,6 +266,10 @@ extension TurboNavigator: SessionDelegate {
         delegate.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
     }
 
+    public func sessionDidFinishRequest(_ session: Session) {
+        delegate.sessionDidFinishRequest(session)
+    }
+
     public func sessionDidLoadWebView(_ session: Session) {
         session.webView.navigationDelegate = session
         delegate.sessionDidLoadWebView(session)
