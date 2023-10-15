@@ -5,7 +5,7 @@
 
   <div class="w-100 mx-auto">
     <p class="fs-5 mb-0"><%= name %></p>
-    <p class="mb-0 text-muted"><%= description %></p>
+    <p class="mb-0 text-muted"><%= local_assigns[:description] || yield %></p>
   </div>
 
   <div class="col flex-grow-0 flex-shrink-1 my-auto">

@@ -3,7 +3,7 @@
 <p class="my-3">This screen was pushed onto the navigation stack.</p>
 <p>This is the default behavior, no custom options are required.</p>
 
-<div class="list-group list-group-flush mx-n3 sm:mx-0">
+<div class="list-group list-group-flush mx-n3 sm:mx-0" data-controller="alerts">
   <%= render "navigations/item",
     path: second_navigation_path,
     icon: "bi-arrow-right",
@@ -34,4 +34,20 @@
     icon: "bi-bug",
     name: "Error handling",
     description: "Visit a page that does not exist (404)." %>
+
+  <%= render "navigations/item",
+    path: "#",
+    icon: "bi-exclamation-circle",
+    name: "JavaScript alert dialog",
+    data: {action: "alerts#showAlert", title: "A JavaScript alert."} do %>
+    Present a JavaScript <code>alert()</code>.
+  <% end %>
+
+  <%= render "navigations/item",
+    path: "#",
+    icon: "bi-question-circle",
+    name: "JavaScript confirm dialog",
+    data: {action: "alerts#showConfirm", title: "Are you sure?"} do %>
+    Present a JavaScript <code>confirm()</code>, like via <code>data-turbo-confirm</code>.
+  <% end %>
 </div>

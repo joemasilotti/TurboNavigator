@@ -5,7 +5,7 @@ import WebKit
 
 /// Handles navigation to new URLs using the following rules:
 /// https://github.com/joemasilotti/TurboNavigator#handled-flows
-public class TurboNavigator {
+public class TurboNavigator: NSObject {
     /// Default initializer.
     /// - Parameters:
     ///   - delegate: handle custom controller routing
@@ -22,11 +22,14 @@ public class TurboNavigator {
         self.delegate = delegate
         self.navigationController = navigationController
         self.modalNavigationController = modalNavigationController
+        super.init()
 
         session.delegate = self
         modalSession.delegate = self
         session.pathConfiguration = pathConfiguration
         modalSession.pathConfiguration = pathConfiguration
+        session.webView.uiDelegate = self
+        modalSession.webView.uiDelegate = self
     }
 
     /// Provide `Turbo.Session` instances with preconfigured path configurations and delegates.
@@ -276,5 +279,19 @@ extension TurboNavigator: SessionDelegate {
     public func sessionDidLoadWebView(_ session: Session) {
         session.webView.navigationDelegate = session
         delegate.sessionDidLoadWebView(session)
+    }
+}
+
+// MARK: WKUIDelegate
+
+extension TurboNavigator: WKUIDelegate {
+    public func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        guard let controller = currentNavigationController.visibleViewController else { return }
+        delegate.controller(controller, runJavaScriptAlertPanelWithMessage: message, completionHandler: completionHandler)
+    }
+
+    public func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        guard let controller = currentNavigationController.visibleViewController else { return }
+        delegate.controller(controller, runJavaScriptConfirmPanelWithMessage: message, completionHandler: completionHandler)
     }
 }

@@ -34,6 +34,12 @@ public protocol TurboNavigationDelegate: AnyObject {
 
     /// Optional. Useful for interacting with the web view after the page loads.
     func sessionDidFinishRequest(_ session: Session)
+
+    /// Optional. Override to customize the behavior when a JavaScript `alert()` dialog is shown.
+    func controller(_ controller: UIViewController, runJavaScriptAlertPanelWithMessage message: String, completionHandler: @escaping () -> Void)
+
+    /// Optional. Override to customize the behavior when a JavaScript `confirm()` dialog is shown.
+    func controller(_ controller: UIViewController, runJavaScriptConfirmPanelWithMessage message: String, completionHandler: @escaping (Bool) -> Void)
 }
 
 public extension TurboNavigationDelegate {
@@ -63,4 +69,23 @@ public extension TurboNavigationDelegate {
     func sessionDidFinishRequest(_ session: Session) {}
 
     func sessionDidLoadWebView(_ session: Session) {}
+
+    func controller(_ controller: UIViewController, runJavaScriptAlertPanelWithMessage message: String, completionHandler: @escaping () -> Void) {
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
+            completionHandler()
+        })
+        controller.present(alert, animated: true)
+    }
+
+    func controller(_ controller: UIViewController, runJavaScriptConfirmPanelWithMessage message: String, completionHandler: @escaping (Bool) -> Void) {
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in
+            completionHandler(true)
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            completionHandler(false)
+        })
+        controller.present(alert, animated: true)
+    }
 }

@@ -12,7 +12,7 @@
     <%= hotwire_livereload_tags if Rails.env.development? %>
   </head>
 
-  <body class="<%= "turbo-native" if turbo_native_app? %>">
+  <body class="mb-5 <%= "turbo-native" if turbo_native_app? %>">
     <%= render "shared/navbar" %>
     <main class="container">
       <%= render "shared/flash" %>

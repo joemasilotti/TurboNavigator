@@ -5,5 +5,5 @@
 
 <div class="btn-group d-flex d-sm-inline-flex mt-4" role="group">
   <%= link_to "Edit resource", edit_resource_path(@resource), class: "btn btn-outline-secondary" %>
-  <%= link_to "Delete resource", resource_path(@resource), data: {turbo_method: :delete}, class: "btn btn-outline-danger" %>
+  <%= link_to "Delete resource", resource_path(@resource), data: {turbo_method: :delete, turbo_confirm: "Delete this resource?"}, class: "btn btn-outline-danger" %>
 </div>
