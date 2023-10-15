@@ -51,9 +51,9 @@ public class TurboNavigator {
         self.delegate = delegate
     }
 
-    public var rootViewController: UIViewController { navigationController }
-    public let navigationController: UINavigationController
-    public let modalNavigationController: UINavigationController
+    public var currentNavigationController: UINavigationController {
+        navigationController.presentedViewController != nil ? modalNavigationController : navigationController
+    }
 
     public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
@@ -88,6 +88,9 @@ public class TurboNavigator {
     }
 
     // MARK: Internal
+
+    let navigationController: UINavigationController
+    let modalNavigationController: UINavigationController
 
     let session: Session
     let modalSession: Session
