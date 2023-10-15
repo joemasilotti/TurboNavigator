@@ -245,6 +245,22 @@ final class TurboNavigatorTests: XCTestCase {
         XCTAssertNotEqual(navigator.session.activeVisitable?.visitableURL, proposal.url)
     }
 
+    func test_currentNavigationController_startsAsRoot() {
+        XCTAssertIdentical(navigator.currentNavigationController, navigator.navigationController)
+    }
+
+    func test_currentNavigationController_modalPresented_isModal() {
+        navigator.route(VisitProposal(path: "/one"))
+        navigator.route(VisitProposal(path: "/two", context: .modal))
+        XCTAssertIdentical(navigator.currentNavigationController, navigator.modalNavigationController)
+    }
+
+    func test_currentNavigationController_mainNavigation_isRoot() {
+        navigator.route(VisitProposal(path: "/one", context: .modal))
+        navigator.route(VisitProposal(path: "/two"))
+        XCTAssertIdentical(navigator.currentNavigationController, navigator.navigationController)
+    }
+
     // MARK: Private
 
     private enum Context {
