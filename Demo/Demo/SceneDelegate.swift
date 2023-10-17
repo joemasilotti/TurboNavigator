@@ -23,4 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension SceneDelegate: TurboNavigationDelegate {}
+extension SceneDelegate: TurboNavigationDelegate {
+  func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    completionHandler(.useCredential, URLCredential(user: "user", password: "let-me-in", persistence: .forSession))
+  }
+}
