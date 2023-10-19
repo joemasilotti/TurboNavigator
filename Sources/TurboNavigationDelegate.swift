@@ -48,6 +48,14 @@ public extension TurboNavigationDelegate {
     }
 
     func openExternalURL(_ url: URL, from controller: UIViewController) {
+        if url.scheme == "mailto" || url.scheme == "tel" {
+            if UIApplication.shared.canOpenURL(url) {
+                return UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                return print("Can't open email client.")
+            }
+        }
+      
         let safariViewController = SFSafariViewController(url: url)
         safariViewController.modalPresentationStyle = .pageSheet
         if #available(iOS 15.0, *) {
