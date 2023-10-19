@@ -48,20 +48,16 @@ public extension TurboNavigationDelegate {
     }
 
     func openExternalURL(_ url: URL, from controller: UIViewController) {
-        if url.scheme == "mailto" || url.scheme == "tel" {
-            if UIApplication.shared.canOpenURL(url) {
-                return UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            } else {
-                return print("Can't open email client.")
+        if ["http", "https"].contains(url.scheme) {
+            let safariViewController = SFSafariViewController(url: url)
+            safariViewController.modalPresentationStyle = .pageSheet
+            if #available(iOS 15.0, *) {
+                safariViewController.preferredControlTintColor = .tintColor
             }
+            controller.present(safariViewController, animated: true)
+        } else if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         }
-      
-        let safariViewController = SFSafariViewController(url: url)
-        safariViewController.modalPresentationStyle = .pageSheet
-        if #available(iOS 15.0, *) {
-            safariViewController.preferredControlTintColor = .tintColor
-        }
-        controller.present(safariViewController, animated: true)
     }
 
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
