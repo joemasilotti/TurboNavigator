@@ -309,9 +309,13 @@ TurboConfig.shared.makeCustomWebView = { (configuration: WKWebViewConfiguration)
 
 ### Customize behavior for external URLs
 
-Turbo cannot navigate across domains because page visits are done via JavaScript. A clicked link that points to a different domain is considered external.
+Turbo cannot navigate across domains because page visits are done via JavaScript. A tapped link that points to a different domain is considered external.
 
-By default, a `SFSafariViewController` is presented. This can be overridden by implementing the following delegate method.
+By default, web URLs (`http://` and `https://`) are presented via the in-app browser, `SFSafariViewController`. Everything else is opened natively. For example, `tel:` and `sms:` links are opened, when possible, in Phone.app or Messages.app.
+
+If you want to register _additional_ URL schemes you need to follow the [steps outlined here](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl#discussion) to add an entry in your Info.plist.
+
+This behavior can be overridden by implementing the following delegate method.
 
 ```swift
 class MyCustomClass: TurboNavigationDelegate {
