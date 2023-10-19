@@ -30,6 +30,12 @@
     description: "Do nothing." %>
 
   <%= render "navigations/item",
+    path: "sms:555-555-5555",
+    icon: "bi-chat",
+    name: "<code>sms:</code> URLs".html_safe,
+    description: "Handle non-http(s) URLs natively." %>
+
+  <%= render "navigations/item",
     path: "/not_found",
     icon: "bi-bug",
     name: "Error handling",
