@@ -7,12 +7,13 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "native", "data-turbo-track": "reload" if turbo_native_app? %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 
     <%= hotwire_livereload_tags if Rails.env.development? %>
   </head>
 
-  <body class="<%= "turbo-native" if turbo_native_app? %>">
+  <body>
     <%= render "shared/navbar" %>
     <main class="container">
       <%= render "shared/flash" %>

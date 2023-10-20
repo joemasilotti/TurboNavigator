@@ -1,0 +1,9 @@
+/* Hide content on Turbo native apps. */
+.d-turbo-native-none {
+  display: none;
+}
+
+/* Show content on Turbo Native apps. */
+.d-turbo-native-block {
+  display: block !important;
+}
