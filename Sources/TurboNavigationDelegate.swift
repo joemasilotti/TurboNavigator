@@ -48,12 +48,16 @@ public extension TurboNavigationDelegate {
     }
 
     func openExternalURL(_ url: URL, from controller: UIViewController) {
-        let safariViewController = SFSafariViewController(url: url)
-        safariViewController.modalPresentationStyle = .pageSheet
-        if #available(iOS 15.0, *) {
-            safariViewController.preferredControlTintColor = .tintColor
+        if ["http", "https"].contains(url.scheme) {
+            let safariViewController = SFSafariViewController(url: url)
+            safariViewController.modalPresentationStyle = .pageSheet
+            if #available(iOS 15.0, *) {
+                safariViewController.preferredControlTintColor = .tintColor
+            }
+            controller.present(safariViewController, animated: true)
+        } else if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         }
-        controller.present(safariViewController, animated: true)
     }
 
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
