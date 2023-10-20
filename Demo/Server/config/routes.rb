@@ -14,7 +14,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :configuration, only: :show
+  resources :configurations, only: [] do
+    get "ios_v1", on: :collection
+  end
 
   root "dashboards#show"
 end

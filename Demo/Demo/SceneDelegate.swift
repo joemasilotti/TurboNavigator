@@ -9,7 +9,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private lazy var turboNavigator = TurboNavigator(delegate: self, pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
-        .server(baseURL.appendingPathComponent("/configuration"))
+        .server(baseURL.appendingPathComponent("/configurations/ios_v1.json"))
     ])
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
