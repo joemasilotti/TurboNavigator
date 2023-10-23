@@ -1,5 +1,5 @@
 class ConfigurationsController < ApplicationController
-  def show
+  def ios_v1
     render json: {
       settings: [],
       rules: [
