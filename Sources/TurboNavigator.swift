@@ -12,21 +12,16 @@ public class TurboNavigator {
     ///   - pathConfiguration: assigned to internal `Session` instances for custom configuration
     ///   - navigationController: optional: override the main navigation stack
     ///   - modalNavigationController: optional: override the modal navigation stack
-    public init(delegate: TurboNavigationDelegate,
-                pathConfiguration: PathConfiguration? = nil,
-                navigationController: UINavigationController = UINavigationController(),
-                modalNavigationController: UINavigationController = UINavigationController())
+    public init(
+        delegate: TurboNavigationDelegate,
+        pathConfiguration: PathConfiguration? = nil,
+        navigationController: UINavigationController = UINavigationController(),
+        modalNavigationController: UINavigationController = UINavigationController())
     {
-        self.session = Session(webView: TurboConfig.shared.makeWebView())
-        self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
         self.delegate = delegate
+        self.pathConfiguration = pathConfiguration
         self.navigationController = navigationController
         self.modalNavigationController = modalNavigationController
-
-        session.delegate = self
-        modalSession.delegate = self
-        session.pathConfiguration = pathConfiguration
-        modalSession.pathConfiguration = pathConfiguration
     }
 
     /// Provide `Turbo.Session` instances with preconfigured path configurations and delegates.
@@ -37,18 +32,16 @@ public class TurboNavigator {
     ///   - delegate: handle non-routing behavior, like custom error handling
     ///   - navigationController: optional: override the main navigation stack
     ///   - modalNavigationController: optional: override the modal navigation stack
-    public init(preconfiguredMainSession: Turbo.Session,
-                preconfiguredModalSession: Turbo.Session,
-                delegate: TurboNavigationDelegate,
-                navigationController: UINavigationController = UINavigationController(),
-                modalNavigationController: UINavigationController = UINavigationController())
+    public convenience init(
+        preconfiguredMainSession: Turbo.Session,
+        preconfiguredModalSession: Turbo.Session,
+        delegate: TurboNavigationDelegate,
+        navigationController: UINavigationController = UINavigationController(),
+        modalNavigationController: UINavigationController = UINavigationController())
     {
+        self.init(delegate: delegate, navigationController: navigationController, modalNavigationController: modalNavigationController)
         self.session = preconfiguredMainSession
         self.modalSession = preconfiguredModalSession
-        self.navigationController = navigationController
-        self.modalNavigationController = modalNavigationController
-
-        self.delegate = delegate
     }
 
     public var rootViewController: UIViewController { navigationController }
@@ -89,8 +82,8 @@ public class TurboNavigator {
 
     // MARK: Internal
 
-    let session: Session
-    let modalSession: Session
+    lazy var session = makeSession()
+    lazy var modalSession = makeSession()
 
     // MARK: Private
 
@@ -100,6 +93,14 @@ public class TurboNavigator {
     }
 
     private unowned let delegate: TurboNavigationDelegate
+    private let pathConfiguration: PathConfiguration?
+
+    private func makeSession() -> Session {
+        let session = Session(webView: TurboConfig.shared.makeWebView())
+        session.delegate = self
+        session.pathConfiguration = pathConfiguration
+        return session
+    }
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         switch delegate.handle(proposal: proposal) {
