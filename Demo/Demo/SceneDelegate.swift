@@ -7,7 +7,7 @@ let baseURL = URL(string: "http://localhost:3000")!
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
-    private lazy var turboNavigator = TurboNavigator(delegate: self, pathConfiguration: pathConfiguration)
+    private lazy var turboNavigator = TurboNavigator(pathConfiguration: pathConfiguration)
     private lazy var pathConfiguration = PathConfiguration(sources: [
         .server(baseURL.appendingPathComponent("/configuration"))
     ])
@@ -22,5 +22,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.turboNavigator.route(baseURL)
     }
 }
-
-extension SceneDelegate: TurboNavigationDelegate {}
