@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         self.window?.makeKeyAndVisible()
 
-        self.window?.rootViewController = self.turboNavigator.currentNavigationController
+        self.window?.rootViewController = self.turboNavigator.rootViewController
         self.turboNavigator.route(baseURL)
     }
 }

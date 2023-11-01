@@ -8,56 +8,32 @@ import WebKit
 public class TurboNavigator: NSObject {
     /// Default initializer.
     /// - Parameters:
-    ///   - delegate: handle custom controller routing
-    ///   - pathConfiguration: assigned to internal `Session` instances for custom configuration
-    ///   - navigationController: optional: override the main navigation stack
-    ///   - modalNavigationController: optional: override the modal navigation stack
-    public init(delegate: TurboNavigationDelegate,
-                pathConfiguration: PathConfiguration? = nil,
-                navigationController: UINavigationController = UINavigationController(),
-                modalNavigationController: UINavigationController = UINavigationController())
+    ///   - delegate: Handle custom controller routing.
+    ///   - pathConfiguration: Optional. Remotely configure settings and path rules.
+    ///   - navigationController: Optional. Override the main navigation stack.
+    ///   - modalNavigationController: Optional. Override the modal navigation stack.
+    public init(
+        delegate: TurboNavigationDelegate,
+        pathConfiguration: PathConfiguration? = nil,
+        navigationController: UINavigationController = UINavigationController(),
+        modalNavigationController: UINavigationController = UINavigationController())
     {
-        self.session = Session(webView: TurboConfig.shared.makeWebView())
-        self.modalSession = Session(webView: TurboConfig.shared.makeWebView())
         self.delegate = delegate
+        self.pathConfiguration = pathConfiguration
         self.navigationController = navigationController
         self.modalNavigationController = modalNavigationController
         super.init()
-
-        session.delegate = self
-        modalSession.delegate = self
-        session.pathConfiguration = pathConfiguration
-        modalSession.pathConfiguration = pathConfiguration
-        session.webView.uiDelegate = self
-        modalSession.webView.uiDelegate = self
     }
 
-    /// Provide `Turbo.Session` instances with preconfigured path configurations and delegates.
-    /// Note that TurboNavigationDelegate.controller(_:forProposal:) will no longer be called.
-    /// - Parameters:
-    ///   - preconfiguredMainSession: a session whose delegate is not `TurboNavigator`
-    ///   - preconfiguredModalSession: a session whose delegate is not `TurboNavigator`
-    ///   - delegate: handle non-routing behavior, like custom error handling
-    ///   - navigationController: optional: override the main navigation stack
-    ///   - modalNavigationController: optional: override the modal navigation stack
-    public init(preconfiguredMainSession: Turbo.Session,
-                preconfiguredModalSession: Turbo.Session,
-                delegate: TurboNavigationDelegate,
-                navigationController: UINavigationController = UINavigationController(),
-                modalNavigationController: UINavigationController = UINavigationController())
-    {
-        self.session = preconfiguredMainSession
-        self.modalSession = preconfiguredModalSession
-        self.navigationController = navigationController
-        self.modalNavigationController = modalNavigationController
+    /// Set this as the `rootViewController` of your application's `UIWindow`.
+    public var rootViewController: UIViewController { navigationController }
 
-        self.delegate = delegate
-    }
-
+    /// `navigationController` or `modalNavigationController`, whichever is being shown.
     public var currentNavigationController: UINavigationController {
         navigationController.presentedViewController != nil ? modalNavigationController : navigationController
     }
 
+    /// Follows rules from `pathConfiguration` to route a `URL` to the stack.
     public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
         let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
@@ -65,6 +41,7 @@ public class TurboNavigator: NSObject {
         route(proposal)
     }
 
+    /// Follows rules from `pathConfiguration` to route a `VisitProposal` to the stack.
     public func route(_ proposal: VisitProposal) {
         guard let controller = controller(for: proposal) else { return }
 
@@ -95,8 +72,8 @@ public class TurboNavigator: NSObject {
     let navigationController: UINavigationController
     let modalNavigationController: UINavigationController
 
-    let session: Session
-    let modalSession: Session
+    lazy var session = makeSession()
+    lazy var modalSession = makeSession()
 
     // MARK: Private
 
@@ -106,6 +83,15 @@ public class TurboNavigator: NSObject {
     }
 
     private unowned let delegate: TurboNavigationDelegate
+    private let pathConfiguration: PathConfiguration?
+
+    private func makeSession() -> Session {
+        let session = Session(webView: TurboConfig.shared.makeWebView())
+        session.delegate = self
+        session.pathConfiguration = pathConfiguration
+        session.webView.uiDelegate = delegate.webViewDelegate ?? self
+        return session
+    }
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         switch delegate.handle(proposal: proposal) {
@@ -254,13 +240,19 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func session(_ session: Session, openExternalURL url: URL) {
-        let controller = session === modalSession ? modalNavigationController : navigationController
-        delegate.openExternalURL(url, from: controller)
+        let safariViewController = SFSafariViewController(url: url)
+        safariViewController.modalPresentationStyle = .pageSheet
+        if #available(iOS 15.0, *) {
+            safariViewController.preferredControlTintColor = .tintColor
+        }
+        currentNavigationController.visibleViewController?.present(safariViewController, animated: true)
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        delegate.visitableDidFailRequest(visitable, error: error) {
-            session.reload()
+        if let errorPresenter = visitable as? ErrorPresenter {
+            errorPresenter.presentError(error) {
+                session.reload()
+            }
         }
     }
 
@@ -268,30 +260,48 @@ extension TurboNavigator: SessionDelegate {
         session.reload()
     }
 
+    // MARK: SessionDelegate → TurboNavigationDelegate
+
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        delegate.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
+        delegate.session(session, didReceiveAuthenticationChallenge: challenge, completionHandler: completionHandler)
+    }
+
+    public func sessionDidLoadWebView(_ session: Session) {
+        delegate.sessionDidLoadWebView(session)
+    }
+
+    public func sessionDidStartRequest(_ session: Session) {
+        delegate.sessionDidStartRequest(session)
     }
 
     public func sessionDidFinishRequest(_ session: Session) {
         delegate.sessionDidFinishRequest(session)
     }
 
-    public func sessionDidLoadWebView(_ session: Session) {
-        session.webView.navigationDelegate = session
-        delegate.sessionDidLoadWebView(session)
+    public func sessionDidStartFormSubmission(_ session: Session) {
+        delegate.sessionDidStartFormSubmission(session)
     }
 }
 
-// MARK: WKUIDelegate
+// MARK: - WKUIDelegate
 
 extension TurboNavigator: WKUIDelegate {
     public func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
-        guard let controller = currentNavigationController.visibleViewController else { return }
-        delegate.controller(controller, runJavaScriptAlertPanelWithMessage: message, completionHandler: completionHandler)
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
+            completionHandler()
+        })
+        currentNavigationController.visibleViewController?.present(alert, animated: true)
     }
 
     public func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
-        guard let controller = currentNavigationController.visibleViewController else { return }
-        delegate.controller(controller, runJavaScriptConfirmPanelWithMessage: message, completionHandler: completionHandler)
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in
+            completionHandler(true)
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            completionHandler(false)
+        })
+        currentNavigationController.visibleViewController?.present(alert, animated: true)
     }
 }
