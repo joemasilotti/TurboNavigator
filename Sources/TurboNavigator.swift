@@ -13,6 +13,15 @@ import SafariServices
 protocol TurboNavigatorDelegate : AnyObject {
     typealias RetryBlock = () -> Void
     
+    /// Optional. Accept or reject a visit proposal.
+    /// If accepted, you may provide a view controller to be displayed, otherwise a new `VisitableViewController` is displayed.
+    /// If rejected, no changes to navigation occur.
+    /// If not implemented, proposals are accepted and a new `VisitableViewController` is displayed.
+    ///
+    /// - Parameter proposal: navigation destination
+    /// - Returns: how to react to the visit proposal
+    func handle(proposal: VisitProposal) -> ProposalResult
+    
     /// Optional. An error occurred loading the request, present it to the user.
     /// Retry the request by executing the closure.
     /// If not implemented, will present the error's localized description and a Retry button.
@@ -33,14 +42,32 @@ class TurboNavigator {
     init(session: Session, modalSession: Session) {
         self.session = session
         self.modalSession = modalSession
-        self.hierarchyController = TurboNavigationHierarchyController(delegate: <#T##TurboNavigationHierarchyControllerDelegate#>)
+        self.hierarchyController = TurboNavigationHierarchyController()
     }
     
     func route(url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
         let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
         let proposal = VisitProposal(url: url, options: options, properties: properties)
-        hierarchyController.route(proposal)
+        let controller = controller(for: proposal)
+        
+        guard let controller else { return }
+        
+        hierarchyController.route(controller: controller, proposal: proposal)
+    }
+    
+    private func controller(for proposal: VisitProposal) -> UIViewController? {
+        
+        guard let delegate else { return nil }
+        
+        switch delegate.handle(proposal: proposal) {
+        case .accept:
+            return VisitableViewController(url: proposal.url)
+        case .acceptCustom(let customViewController):
+            return customViewController
+        case .reject:
+            return nil
+        }
     }
 }
 
@@ -49,7 +76,11 @@ class TurboNavigator {
 extension TurboNavigator: SessionDelegate {
     
     public func session(_ session: Session, didProposeVisit proposal: VisitProposal) {
-        hierarchyController.route(proposal)
+        
+        guard let controller = controller(for: proposal) else { return }
+        
+        hierarchyController.route(controller: controller,
+                                  proposal: proposal)
     }
 
     public func sessionDidFinishFormSubmission(_ session: Session) {
