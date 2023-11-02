@@ -3,6 +3,8 @@ import Turbo
 import UIKit
 import WebKit
 
+private let sharedProcessPool = WKProcessPool()
+
 /// Handles navigation to new URLs using the following rules:
 /// https://github.com/joemasilotti/TurboNavigator#handled-flows
 public class TurboNavigator: NSObject {
@@ -86,7 +88,12 @@ public class TurboNavigator: NSObject {
     private let pathConfiguration: PathConfiguration?
 
     private func makeSession() -> Session {
-        let session = Session(webView: TurboConfig.shared.makeWebView())
+        let configuration = WKWebViewConfiguration()
+        configuration.applicationNameForUserAgent = "Turbo Native iOS"
+        configuration.processPool = sharedProcessPool
+        let webView = delegate.webView(configuration: configuration)
+
+        let session = Session(webView: webView)
         session.delegate = self
         session.pathConfiguration = pathConfiguration
         session.webView.uiDelegate = delegate.webViewDelegate ?? self

@@ -1,6 +1,7 @@
 import Turbo
 import TurboNavigator
 import UIKit
+import WebKit
 
 let baseURL = URL(string: "http://localhost:3000")!
 

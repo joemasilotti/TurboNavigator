@@ -13,6 +13,7 @@
   </head>
 
   <body class="mb-5 <%= "turbo-native" if turbo_native_app? %>">
+    <h1><%= request.user_agent %></h1>
     <%= render "shared/navbar" %>
     <main class="container">
       <%= render "shared/flash" %>
