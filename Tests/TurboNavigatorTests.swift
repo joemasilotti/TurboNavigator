@@ -10,7 +10,7 @@ final class TurboNavigatorTests: XCTestCase {
         navigationController = TestableNavigationController()
         modalNavigationController = TestableNavigationController()
 
-        navigator = TurboNavigator(
+        navigator = TurboNavigationHierarchyController(
             delegate: delegate,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
@@ -207,7 +207,7 @@ final class TurboNavigatorTests: XCTestCase {
 
     func test_presentingUIAlertController_doesNotWrapInNavigationController() {
         let alertControllerDelegate = AlertControllerDelegate()
-        navigator = TurboNavigator(
+        navigator = TurboNavigationHierarchyController(
             delegate: alertControllerDelegate,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
@@ -220,7 +220,7 @@ final class TurboNavigatorTests: XCTestCase {
 
     func test_presentingUIAlertController_onTheModal_doesNotWrapInNavigationController() {
         let alertControllerDelegate = AlertControllerDelegate()
-        navigator = TurboNavigator(
+        navigator = TurboNavigationHierarchyController(
             delegate: alertControllerDelegate,
             navigationController: navigationController,
             modalNavigationController: modalNavigationController
@@ -251,7 +251,7 @@ final class TurboNavigatorTests: XCTestCase {
         case main, modal
     }
 
-    private var navigator: TurboNavigator!
+    private var navigator: TurboNavigationHierarchyController!
     private let delegate = EmptyNavigationDelegate()
     private var navigationController: TestableNavigationController!
     private var modalNavigationController: TestableNavigationController!
