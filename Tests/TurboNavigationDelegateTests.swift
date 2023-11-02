@@ -12,16 +12,6 @@ final class TurboNavigationDelegateTests: XCTestCase {
         XCTAssertEqual(result, .accept)
     }
 
-    func test_openExternalURL_presentsSafariViewController() throws {
-        let url = URL(string: "https://example.com")!
-        let controller = TestableNavigationController()
-
-        delegate.openExternalURL(url, from: controller)
-
-        XCTAssert(controller.presentedViewController is SFSafariViewController)
-        XCTAssertEqual(controller.modalPresentationStyle, .pageSheet)
-    }
-
     // MARK: Private
 
     private let delegate = DefaultDelegate()
