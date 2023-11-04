@@ -5,28 +5,35 @@ import WebKit
 
 /// Handles navigation to new URLs using the following rules:
 /// https://github.com/joemasilotti/TurboNavigator#handled-flows
-public class TurboNavigationHierarchyController {
+class TurboNavigationHierarchyController {
     
-    /// Default initializer.
-    /// - Parameters:
-    ///   - delegate: handle custom controller routing
-    ///   - pathConfiguration: assigned to internal `Session` instances for custom configuration
-    ///   - navigationController: optional: override the main navigation stack
-    ///   - modalNavigationController: optional: override the modal navigation stack
-    public init(delegate: TurboNavigationHierarchyControllerDelegate,
-                navigationController: UINavigationController = UINavigationController(),
-                modalNavigationController: UINavigationController = UINavigationController())
-    {
-        self.delegate = delegate
-        self.navigationController = navigationController
-        self.modalNavigationController = modalNavigationController
+    let navigationController: UINavigationController
+    let modalNavigationController: UINavigationController
+    var rootViewController: UIViewController { navigationController }
+    
+    enum NavigationStackType {
+        case main
+        case modal
     }
     
-    public var rootViewController: UIViewController { navigationController }
-    public let navigationController: UINavigationController
-    public let modalNavigationController: UINavigationController
+    func navController(for navigationType: NavigationStackType) -> UINavigationController {
+        switch navigationType {
+        case .main: return navigationController
+        case .modal: return modalNavigationController
+        }
+    }
+    
+    /// Default initializer.
+    /// 
+    /// - Parameters:
+    ///   - delegate: handles visits and refresh
+    init(delegate: TurboNavigationHierarchyControllerDelegate) {
+        self.delegate = delegate
+        self.navigationController = UINavigationController()
+        self.modalNavigationController = UINavigationController()
+    }
 
-    public func route(controller: UIViewController, proposal: VisitProposal) {
+    func route(controller: UIViewController, proposal: VisitProposal) {
 
         if let alert = controller as? UIAlertController {
             presentAlert(alert)
@@ -49,28 +56,16 @@ public class TurboNavigationHierarchyController {
             }
         }
     }
-
-    // MARK: Internal
-    
-    public enum NavigationStackType {
-        case main
-        case modal
-    }
     
     func openExternal(url: URL, navigationType: NavigationStackType) {
-        let controller: UINavigationController
-        switch navigationType {
-        case .main: controller = navigationController
-        case .modal: controller = modalNavigationController
-        }
-        
         if ["http", "https"].contains(url.scheme) {
             let safariViewController = SFSafariViewController(url: url)
             safariViewController.modalPresentationStyle = .pageSheet
             if #available(iOS 15.0, *) {
                 safariViewController.preferredControlTintColor = .tintColor
             }
-            controller.present(safariViewController, animated: true)
+            let navController = navController(for: navigationType)
+            navController.present(safariViewController, animated: true)
         } else if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         }
@@ -98,7 +93,11 @@ public class TurboNavigationHierarchyController {
         case .default:
             navigationController.dismiss(animated: true)
             pushOrReplace(on: navigationController, with: controller, via: proposal)
-            delegate.visit(controller, on: .main, with: proposal.options)
+            if let visitable = controller as? Visitable {
+                delegate.visit(visitable,
+                               on: .main,
+                               with: proposal.options)
+            }
         case .modal:
             if navigationController.presentedViewController != nil {
                 pushOrReplace(on: modalNavigationController, with: controller, via: proposal)
@@ -106,7 +105,11 @@ public class TurboNavigationHierarchyController {
                 modalNavigationController.setViewControllers([controller], animated: false)
                 navigationController.present(modalNavigationController, animated: true)
             }
-            delegate.visit(controller, on: .modal, with: proposal.options)
+            if let visitable = controller as? Visitable {
+                delegate.visit(visitable,
+                               on: .modal,
+                               with: proposal.options)
+            }
         }
     }
 
@@ -158,7 +161,11 @@ public class TurboNavigationHierarchyController {
         case .default:
             navigationController.dismiss(animated: true)
             navigationController.replaceLastViewController(with: controller)
-            delegate.visit(controller, on: .main, with: proposal.options)
+            if let visitable = controller as? Visitable {
+                delegate.visit(visitable,
+                               on: .main,
+                               with: proposal.options)
+            }
         case .modal:
             if navigationController.presentedViewController != nil {
                 modalNavigationController.replaceLastViewController(with: controller)
@@ -166,7 +173,11 @@ public class TurboNavigationHierarchyController {
                 modalNavigationController.setViewControllers([controller], animated: false)
                 navigationController.present(modalNavigationController, animated: true)
             }
-            delegate.visit(controller, on: .modal, with: proposal.options)
+            if let visitable = controller as? Visitable {
+                delegate.visit(visitable,
+                               on: .modal,
+                               with: proposal.options)
+            }
         }
     }
 
@@ -196,7 +207,9 @@ public class TurboNavigationHierarchyController {
         navigationController.setViewControllers([controller], animated: true)
 
         if let visitable = controller as? Visitable {
-            delegate.visit(controller, on: .main, with: .init(action: .replace))
+            delegate.visit(visitable,
+                           on: .main,
+                           with: .init(action: .replace))
         }
     }
 }

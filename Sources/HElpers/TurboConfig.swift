@@ -17,7 +17,7 @@ public class TurboConfig {
 
     // MARK: - Internal
 
-    func makeWebView() -> WKWebView {
+    public func makeWebView() -> WKWebView {
         makeCustomWebView(makeWebViewConfiguration())
     }
 

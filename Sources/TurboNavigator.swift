@@ -10,55 +10,45 @@ import UIKit
 import Turbo
 import SafariServices
 
-protocol TurboNavigatorDelegate : AnyObject {
-    typealias RetryBlock = () -> Void
+public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     
-    /// Optional. Accept or reject a visit proposal.
-    /// If accepted, you may provide a view controller to be displayed, otherwise a new `VisitableViewController` is displayed.
-    /// If rejected, no changes to navigation occur.
-    /// If not implemented, proposals are accepted and a new `VisitableViewController` is displayed.
-    ///
-    /// - Parameter proposal: navigation destination
-    /// - Returns: how to react to the visit proposal
-    func handle(proposal: VisitProposal) -> ProposalResult
+    public weak var delegate: TurboNavigatorDelegate?
     
-    /// Optional. An error occurred loading the request, present it to the user.
-    /// Retry the request by executing the closure.
-    /// If not implemented, will present the error's localized description and a Retry button.
-    func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock)
+    public var rootViewController: UINavigationController { hierarchyController.navigationController }
     
-    /// Respond to authentication challenge presented by web servers behing basic auth.
-    func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
-}
-
-class TurboNavigator {
-    
-    let session: Session
-    let modalSession: Session
-    let hierarchyController: TurboNavigationHierarchyController
-    
-    weak var delegate: TurboNavigatorDelegate?
-    
-    init(session: Session, modalSession: Session) {
+    public init(session: Session, 
+                modalSession: Session,
+                delegate: TurboNavigatorDelegate? = nil) {
         self.session = session
         self.modalSession = modalSession
-        self.hierarchyController = TurboNavigationHierarchyController()
+        self.delegate = delegate
     }
     
-    func route(url: URL) {
+    /// Transforms `URL` -> `VisitProposal` -> `UIViewController`.
+    /// Given the `VisitProposal`'s properties, push or present this view controller.
+    ///
+    /// - Parameter url: the URL to visit.
+    public func route(url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
         let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
         let proposal = VisitProposal(url: url, options: options, properties: properties)
-        let controller = controller(for: proposal)
         
-        guard let controller else { return }
+        guard let controller = controller(for: proposal) else { return }
         
         hierarchyController.route(controller: controller, proposal: proposal)
     }
     
+    private let session: Session
+    private let modalSession: Session
+    
+    /// Modifies a UINavigationController according to visit proposals.
+    private lazy var hierarchyController = TurboNavigationHierarchyController(delegate: self)
+    
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         
-        guard let delegate else { return nil }
+        guard let delegate else {
+            return VisitableViewController(url: proposal.url)
+        }
         
         switch delegate.handle(proposal: proposal) {
         case .accept:
@@ -109,12 +99,33 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionDidFinishRequest(_ session: Session) {
-        // Handle cookies. Do we need to expose this?
+        // Do we need to expose this if we save cookies?
     }
 
     public func sessionDidLoadWebView(_ session: Session) {
         session.webView.navigationDelegate = session
         // Do we need to expose this?
-        // delegate.sessionDidLoadWebView(session)
+    }
+}
+
+// MARK: TurboNavigationHierarchyControllerDelegate
+extension TurboNavigator {
+    
+    func visit(_ controller: Visitable, 
+               on: TurboNavigationHierarchyController.NavigationStackType,
+               with: Turbo.VisitOptions) {
+        switch on {
+        case .main:
+            session.visit(controller, action: .advance)
+        case .modal:
+            session.visit(controller, action: .advance)
+        }
+    }
+    
+    func refresh(navigationStack: TurboNavigationHierarchyController.NavigationStackType) {
+        switch navigationStack {
+        case .main: session.reload()
+        case .modal: session.reload()
+        }
     }
 }
