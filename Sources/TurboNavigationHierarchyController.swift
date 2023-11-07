@@ -10,7 +10,10 @@ class TurboNavigationHierarchyController {
     let navigationController: UINavigationController
     let modalNavigationController: UINavigationController
     var rootViewController: UIViewController { navigationController }
-    
+    var activeNavigationController: UINavigationController {
+        navigationController.presentedViewController != nil ? modalNavigationController : navigationController
+    }
+
     var animationsEnabled: Bool = true
     
     enum NavigationStackType {
