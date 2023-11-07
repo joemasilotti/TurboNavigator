@@ -18,7 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let mainSession = Session(webView: TurboConfig.shared.makeWebView())
+        mainSession.pathConfiguration = pathConfiguration
+        
         let modalSession = Session(webView: TurboConfig.shared.makeWebView())
+        modalSession.pathConfiguration = pathConfiguration
+        
         turboNavigator = TurboNavigator(session: mainSession,
                                         modalSession: modalSession)
         
