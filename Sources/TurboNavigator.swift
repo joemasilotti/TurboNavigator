@@ -38,7 +38,7 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     /// Given the `VisitProposal`'s properties, push or present this view controller.
     ///
     /// - Parameter url: the URL to visit.
-    public func route(url: URL) {
+    public func route(_ url: URL) {
         let options = VisitOptions(action: .advance, response: nil)
         let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
         let proposal = VisitProposal(url: url, options: options, properties: properties)
