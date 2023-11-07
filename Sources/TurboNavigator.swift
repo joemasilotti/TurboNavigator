@@ -11,9 +11,8 @@ import Turbo
 import SafariServices
 
 public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
-    
-    public weak var delegate: TurboNavigatorDelegate?
-    
+    public unowned var delegate: TurboNavigatorDelegate
+
     public var rootViewController: UINavigationController { hierarchyController.navigationController }
     
     public var webkitUIDelegate: TurboWKUIController? {
@@ -22,14 +21,13 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
             modalSession.webView.uiDelegate = webkitUIDelegate
         }
     }
-    
-    public init(session: Session,
-                modalSession: Session,
-                delegate: TurboNavigatorDelegate? = nil) {
+
+    public init(session: Session, modalSession: Session, delegate: TurboNavigatorDelegate? = nil) {
         self.session = session
         self.modalSession = modalSession
-        self.delegate = delegate
         
+        self.delegate = delegate ?? navigatorDelegate
+
         self.session.delegate = self
         self.modalSession.delegate = self
     }
@@ -53,13 +51,11 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     
     /// Modifies a UINavigationController according to visit proposals.
     lazy var hierarchyController = TurboNavigationHierarchyController(delegate: self)
-    
+
+    /// A default delegate implementation if none is provided.
+    private let navigatorDelegate = DefaultTurboNavigatorDelegate()
+
     private func controller(for proposal: VisitProposal) -> UIViewController? {
-        
-        guard let delegate else {
-            return VisitableViewController(url: proposal.url)
-        }
-        
         switch delegate.handle(proposal: proposal) {
         case .accept:
             return VisitableViewController(url: proposal.url)
@@ -95,7 +91,7 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, error: Error) {
-        delegate?.visitableDidFailRequest(visitable, error: error) {
+        delegate.visitableDidFailRequest(visitable, error: error) {
             session.reload()
         }
     }
@@ -105,7 +101,7 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func session(_ session: Session, didReceiveAuthenticationChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        delegate?.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
+        delegate.didReceiveAuthenticationChallenge(challenge, completionHandler: completionHandler)
     }
 
     public func sessionDidFinishRequest(_ session: Session) {

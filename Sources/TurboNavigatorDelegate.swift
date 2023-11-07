@@ -24,3 +24,19 @@ public protocol TurboNavigatorDelegate : AnyObject {
     func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, 
                                            completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 }
+
+open class DefaultTurboNavigatorDelegate: NSObject, TurboNavigatorDelegate {
+    open func handle(proposal: VisitProposal) -> ProposalResult {
+        .accept
+    }
+
+    open func visitableDidFailRequest(_ visitable: Visitable, error: Error, retry: @escaping RetryBlock) {
+        if let errorPresenter = visitable as? ErrorPresenter {
+            errorPresenter.presentError(error, handler: retry)
+        }
+    }
+
+    open func didReceiveAuthenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(.performDefaultHandling, nil)
+    }
+}
