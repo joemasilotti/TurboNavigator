@@ -7,6 +7,9 @@ import XCTest
 /// See the README for a more visually pleasing table.
 final class TurboNavigationHierarchyControllerTests: XCTestCase {
         
+    private lazy var oneURL = { baseURL.appendingPathComponent("/one") }()
+    private lazy var twoURL = { baseURL.appendingPathComponent("/two") }()
+    
     override func setUp() {
         navigationController = TestableNavigationController()
         modalNavigationController = TestableNavigationController()
@@ -21,11 +24,10 @@ final class TurboNavigationHierarchyControllerTests: XCTestCase {
     }
 
     func test_default_default_default_pushesOnMainStack() {
-        navigator.route(url: baseURL.appendingPathComponent("/one"))
+        navigator.route(url: oneURL)
         XCTAssertEqual(navigator.rootViewController.viewControllers.count, 1)
         XCTAssert(navigator.rootViewController.viewControllers.last is VisitableViewController)
 
-        let twoURL = baseURL.appendingPathComponent("/two")
         navigator.route(url: twoURL)
         XCTAssertEqual(navigator.rootViewController.viewControllers.count, 2)
         XCTAssert(navigator.rootViewController.viewControllers.last is VisitableViewController)
@@ -33,28 +35,26 @@ final class TurboNavigationHierarchyControllerTests: XCTestCase {
     }
 
     func test_default_default_default_visitingSamePage_replacesOnMainStack() {
-//        navigator.route(VisitProposal(path: "/one"))
-//        XCTAssertEqual(navigationController.viewControllers.count, 2)
-//
-//        let proposal = VisitProposal(path: "/one")
-//        navigator.route(proposal)
-//        XCTAssertEqual(navigationController.viewControllers.count, 2)
-//        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
-//        assertVisited(url: proposal.url, on: .main)
+        navigator.route(url: oneURL)
+        XCTAssertEqual(navigationController.viewControllers.count, 1)
+
+        navigator.route(url: oneURL)
+        XCTAssertEqual(navigator.rootViewController.viewControllers.count, 1)
+        XCTAssert(navigator.rootViewController.viewControllers.last is VisitableViewController)
+        assertVisited(url: oneURL, on: .main)
     }
 
     func test_default_default_default_visitingPreviousPage_popsAndVisitsOnMainStack() {
-//        navigator.route(VisitProposal(path: "/one"))
-//        XCTAssertEqual(navigationController.viewControllers.count, 2)
-//
-//        navigator.route(VisitProposal(path: "/two"))
-//        XCTAssertEqual(navigationController.viewControllers.count, 3)
-//
-//        let proposal = VisitProposal(path: "/one")
-//        navigator.route(proposal)
-//        XCTAssertEqual(navigationController.viewControllers.count, 2)
-//        XCTAssert(navigationController.viewControllers.last is VisitableViewController)
-//        assertVisited(url: proposal.url, on: .main)
+        navigator.route(url: oneURL)
+        XCTAssertEqual(navigator.rootViewController.viewControllers.count, 1)
+
+        navigator.route(url: twoURL)
+        XCTAssertEqual(navigator.rootViewController.viewControllers.count, 2)
+
+        navigator.route(url: oneURL)
+        XCTAssertEqual(navigator.rootViewController.viewControllers.count, 1)
+        XCTAssert(navigator.rootViewController.viewControllers.last is VisitableViewController)
+        assertVisited(url: oneURL, on: .main)
     }
 
     func test_default_default_default_replaceAction_replacesOnMainStack() {
