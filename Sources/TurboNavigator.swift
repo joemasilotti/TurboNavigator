@@ -2,6 +2,7 @@ import Foundation
 import SafariServices
 import Turbo
 import UIKit
+import WebKit
 
 public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     public unowned var delegate: TurboNavigatorDelegate
@@ -105,7 +106,11 @@ extension TurboNavigator: SessionDelegate {
     }
 
     public func sessionDidFinishRequest(_ session: Session) {
-        // Do we need to expose this if we save cookies?
+        guard let url = session.activeVisitable?.visitableURL else { return }
+
+        WKWebsiteDataStore.default().httpCookieStore.getAllCookies { cookies in
+            HTTPCookieStorage.shared.setCookies(cookies, for: url, mainDocumentURL: url)
+        }
     }
 
     public func sessionDidLoadWebView(_ session: Session) {
