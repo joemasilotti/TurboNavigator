@@ -22,6 +22,9 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
         self.session = session
         self.modalSession = modalSession
         self.delegate = delegate
+        
+        self.session.delegate = self
+        self.modalSession.delegate = self
     }
     
     /// Transforms `URL` -> `VisitProposal` -> `UIViewController`.
