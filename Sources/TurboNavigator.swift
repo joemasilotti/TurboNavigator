@@ -139,3 +139,9 @@ extension TurboNavigator {
         }
     }
 }
+
+extension TurboNavigator : TurboWKUIDelegate {
+    public func present(_ alert: UIAlertController, animated: Bool) {
+        rootViewController.present(alert, animated: animated)
+    }
+}
