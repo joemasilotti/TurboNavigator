@@ -16,7 +16,14 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     
     public var rootViewController: UINavigationController { hierarchyController.navigationController }
     
-    public init(session: Session, 
+    public var webkitUIDelegate: TurboWKUIController? {
+        didSet {
+            session.webView.uiDelegate = webkitUIDelegate
+            modalSession.webView.uiDelegate = webkitUIDelegate
+        }
+    }
+    
+    public init(session: Session,
                 modalSession: Session,
                 delegate: TurboNavigatorDelegate? = nil) {
         self.session = session
