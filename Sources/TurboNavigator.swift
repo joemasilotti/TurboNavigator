@@ -41,11 +41,11 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
         hierarchyController.route(controller: controller, proposal: proposal)
     }
     
-    private let session: Session
-    private let modalSession: Session
+    let session: Session
+    let modalSession: Session
     
     /// Modifies a UINavigationController according to visit proposals.
-    private lazy var hierarchyController = TurboNavigationHierarchyController(delegate: self)
+    lazy var hierarchyController = TurboNavigationHierarchyController(delegate: self)
     
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         

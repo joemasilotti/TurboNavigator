@@ -11,6 +11,8 @@ class TurboNavigationHierarchyController {
     let modalNavigationController: UINavigationController
     var rootViewController: UIViewController { navigationController }
     
+    var animationsEnabled: Bool = true
+    
     enum NavigationStackType {
         case main
         case modal
@@ -65,7 +67,7 @@ class TurboNavigationHierarchyController {
                 safariViewController.preferredControlTintColor = .tintColor
             }
             let navController = navController(for: navigationType)
-            navController.present(safariViewController, animated: true)
+            navController.present(safariViewController, animated: animationsEnabled)
         } else if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         }
@@ -82,16 +84,16 @@ class TurboNavigationHierarchyController {
 
     private func presentAlert(_ alert: UIAlertController) {
         if navigationController.presentedViewController != nil {
-            modalNavigationController.present(alert, animated: true)
+            modalNavigationController.present(alert, animated: animationsEnabled)
         } else {
-            navigationController.present(alert, animated: true)
+            navigationController.present(alert, animated: animationsEnabled)
         }
     }
 
     private func navigate(with controller: UIViewController, via proposal: VisitProposal) {
         switch proposal.context {
         case .default:
-            navigationController.dismiss(animated: true)
+            navigationController.dismiss(animated: animationsEnabled)
             pushOrReplace(on: navigationController, with: controller, via: proposal)
             if let visitable = controller as? Visitable {
                 delegate.visit(visitable,
@@ -102,8 +104,8 @@ class TurboNavigationHierarchyController {
             if navigationController.presentedViewController != nil {
                 pushOrReplace(on: modalNavigationController, with: controller, via: proposal)
             } else {
-                modalNavigationController.setViewControllers([controller], animated: false)
-                navigationController.present(modalNavigationController, animated: true)
+                modalNavigationController.setViewControllers([controller], animated: animationsEnabled)
+                navigationController.present(modalNavigationController, animated: animationsEnabled)
             }
             if let visitable = controller as? Visitable {
                 delegate.visit(visitable,
@@ -117,9 +119,9 @@ class TurboNavigationHierarchyController {
         if visitingSamePage(on: navigationController, with: controller, via: proposal.url) {
             navigationController.replaceLastViewController(with: controller)
         } else if visitingPreviousPage(on: navigationController, with: controller, via: proposal.url) {
-            navigationController.popViewController(animated: true)
+            navigationController.popViewController(animated: animationsEnabled)
         } else if proposal.options.action == .advance {
-            navigationController.pushViewController(controller, animated: true)
+            navigationController.pushViewController(controller, animated: animationsEnabled)
         } else {
             navigationController.replaceLastViewController(with: controller)
         }
@@ -147,19 +149,19 @@ class TurboNavigationHierarchyController {
     private func pop() {
         if navigationController.presentedViewController != nil {
             if modalNavigationController.viewControllers.count == 1 {
-                navigationController.dismiss(animated: true)
+                navigationController.dismiss(animated: animationsEnabled)
             } else {
-                modalNavigationController.popViewController(animated: true)
+                modalNavigationController.popViewController(animated: animationsEnabled)
             }
         } else {
-            navigationController.popViewController(animated: true)
+            navigationController.popViewController(animated: animationsEnabled)
         }
     }
 
     private func replace(with controller: UIViewController, via proposal: VisitProposal) {
         switch proposal.context {
         case .default:
-            navigationController.dismiss(animated: true)
+            navigationController.dismiss(animated: animationsEnabled)
             navigationController.replaceLastViewController(with: controller)
             if let visitable = controller as? Visitable {
                 delegate.visit(visitable,
@@ -171,7 +173,7 @@ class TurboNavigationHierarchyController {
                 modalNavigationController.replaceLastViewController(with: controller)
             } else {
                 modalNavigationController.setViewControllers([controller], animated: false)
-                navigationController.present(modalNavigationController, animated: true)
+                navigationController.present(modalNavigationController, animated: animationsEnabled)
             }
             if let visitable = controller as? Visitable {
                 delegate.visit(visitable,
@@ -184,27 +186,27 @@ class TurboNavigationHierarchyController {
     private func refresh() {
         if navigationController.presentedViewController != nil {
             if modalNavigationController.viewControllers.count == 1 {
-                navigationController.dismiss(animated: true)
+                navigationController.dismiss(animated: animationsEnabled)
                 delegate.refresh(navigationStack: .main)
             } else {
-                modalNavigationController.popViewController(animated: true)
+                modalNavigationController.popViewController(animated: animationsEnabled)
                 delegate.refresh(navigationStack: .modal)
             }
         } else {
-            navigationController.popViewController(animated: true)
+            navigationController.popViewController(animated: animationsEnabled)
             delegate.refresh(navigationStack: .main)
         }
     }
 
     private func clearAll() {
-        navigationController.dismiss(animated: true)
-        navigationController.popToRootViewController(animated: true)
+        navigationController.dismiss(animated: animationsEnabled)
+        navigationController.popToRootViewController(animated: animationsEnabled)
         delegate.refresh(navigationStack: .main)
     }
 
     private func replaceRoot(with controller: UIViewController) {
-        navigationController.dismiss(animated: true)
-        navigationController.setViewControllers([controller], animated: true)
+        navigationController.dismiss(animated: animationsEnabled)
+        navigationController.setViewControllers([controller], animated: animationsEnabled)
 
         if let visitable = controller as? Visitable {
             delegate.visit(visitable,
