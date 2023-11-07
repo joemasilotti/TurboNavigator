@@ -1,20 +1,13 @@
-//
-//  File 2.swift
-//  
-//
-//  Created by Fernando Olivares on 01/11/23.
-//
-
 import Foundation
-import UIKit
-import Turbo
 import SafariServices
+import Turbo
+import UIKit
 
 public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     public unowned var delegate: TurboNavigatorDelegate
 
     public var rootViewController: UINavigationController { hierarchyController.navigationController }
-    
+
     public var webkitUIDelegate: TurboWKUIController? {
         didSet {
             session.webView.uiDelegate = webkitUIDelegate
@@ -33,7 +26,7 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
 
         defer { self.webkitUIDelegate = TurboWKUIController(delegate: self) }
     }
-    
+
     /// Transforms `URL` -> `VisitProposal` -> `UIViewController`.
     /// Given the `VisitProposal`'s properties, push or present this view controller.
     ///
@@ -42,15 +35,14 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
         let options = VisitOptions(action: .advance, response: nil)
         let properties = session.pathConfiguration?.properties(for: url) ?? PathProperties()
         let proposal = VisitProposal(url: url, options: options, properties: properties)
-        
+
         guard let controller = controller(for: proposal) else { return }
-        
         hierarchyController.route(controller: controller, proposal: proposal)
     }
-    
+
     let session: Session
     let modalSession: Session
-    
+
     /// Modifies a UINavigationController according to visit proposals.
     lazy var hierarchyController = TurboNavigationHierarchyController(delegate: self)
 
@@ -59,12 +51,12 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
 
     private func controller(for proposal: VisitProposal) -> UIViewController? {
         switch delegate.handle(proposal: proposal) {
-        case .accept:
-            return VisitableViewController(url: proposal.url)
-        case .acceptCustom(let customViewController):
-            return customViewController
-        case .reject:
-            return nil
+            case .accept:
+                return VisitableViewController(url: proposal.url)
+            case .acceptCustom(let customViewController):
+                return customViewController
+            case .reject:
+                return nil
         }
     }
 }
@@ -72,13 +64,9 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
 // MARK: - SessionDelegate
 
 extension TurboNavigator: SessionDelegate {
-    
     public func session(_ session: Session, didProposeVisit proposal: VisitProposal) {
-        
         guard let controller = controller(for: proposal) else { return }
-        
-        hierarchyController.route(controller: controller,
-                                  proposal: proposal)
+        hierarchyController.route(controller: controller, proposal: proposal)
     }
 
     public func sessionDidFinishFormSubmission(_ session: Session) {
@@ -117,28 +105,24 @@ extension TurboNavigator: SessionDelegate {
 }
 
 // MARK: TurboNavigationHierarchyControllerDelegate
+
 extension TurboNavigator {
-    
-    func visit(_ controller: Visitable, 
-               on: TurboNavigationHierarchyController.NavigationStackType,
-               with: Turbo.VisitOptions) {
-        switch on {
-        case .main:
-            session.visit(controller, action: .advance)
-        case .modal:
-            session.visit(controller, action: .advance)
+    func visit(_ controller: Visitable, on navigationStack: TurboNavigationHierarchyController.NavigationStackType, with: Turbo.VisitOptions) {
+        switch navigationStack {
+            case .main: session.visit(controller, action: .advance)
+            case .modal: modalSession.visit(controller, action: .advance)
         }
     }
-    
+
     func refresh(navigationStack: TurboNavigationHierarchyController.NavigationStackType) {
         switch navigationStack {
-        case .main: session.reload()
-        case .modal: session.reload()
+            case .main: session.reload()
+            case .modal: modalSession.reload()
         }
     }
 }
 
-extension TurboNavigator : TurboWKUIDelegate {
+extension TurboNavigator: TurboWKUIDelegate {
     public func present(_ alert: UIAlertController, animated: Bool) {
         hierarchyController.activeNavigationController.present(alert, animated: animated)
     }

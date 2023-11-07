@@ -6,7 +6,6 @@ public protocol TurboWKUIDelegate : AnyObject {
 }
 
 public class TurboWKUIController : NSObject, WKUIDelegate {
-    
     weak var delegate: TurboWKUIDelegate?
     init(delegate: TurboWKUIDelegate!) {
         self.delegate = delegate

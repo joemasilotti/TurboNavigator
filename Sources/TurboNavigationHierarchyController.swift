@@ -6,30 +6,30 @@ import WebKit
 /// Handles navigation to new URLs using the following rules:
 /// https://github.com/joemasilotti/TurboNavigator#handled-flows
 class TurboNavigationHierarchyController {
-    
     let navigationController: UINavigationController
     let modalNavigationController: UINavigationController
+
     var rootViewController: UIViewController { navigationController }
     var activeNavigationController: UINavigationController {
         navigationController.presentedViewController != nil ? modalNavigationController : navigationController
     }
 
     var animationsEnabled: Bool = true
-    
+
     enum NavigationStackType {
         case main
         case modal
     }
-    
+
     func navController(for navigationType: NavigationStackType) -> UINavigationController {
         switch navigationType {
-        case .main: return navigationController
-        case .modal: return modalNavigationController
+            case .main: navigationController
+            case .modal: modalNavigationController
         }
     }
-    
+
     /// Default initializer.
-    /// 
+    ///
     /// - Parameters:
     ///   - delegate: handles visits and refresh
     init(delegate: TurboNavigationHierarchyControllerDelegate) {
@@ -39,7 +39,6 @@ class TurboNavigationHierarchyController {
     }
 
     func route(controller: UIViewController, proposal: VisitProposal) {
-
         if let alert = controller as? UIAlertController {
             presentAlert(alert)
         } else {
@@ -61,7 +60,7 @@ class TurboNavigationHierarchyController {
             }
         }
     }
-    
+
     func openExternal(url: URL, navigationType: NavigationStackType) {
         if ["http", "https"].contains(url.scheme) {
             let safariViewController = SFSafariViewController(url: url)
@@ -99,9 +98,7 @@ class TurboNavigationHierarchyController {
             navigationController.dismiss(animated: animationsEnabled)
             pushOrReplace(on: navigationController, with: controller, via: proposal)
             if let visitable = controller as? Visitable {
-                delegate.visit(visitable,
-                               on: .main,
-                               with: proposal.options)
+                delegate.visit(visitable, on: .main, with: proposal.options)
             }
         case .modal:
             if navigationController.presentedViewController != nil {
@@ -111,9 +108,7 @@ class TurboNavigationHierarchyController {
                 navigationController.present(modalNavigationController, animated: animationsEnabled)
             }
             if let visitable = controller as? Visitable {
-                delegate.visit(visitable,
-                               on: .modal,
-                               with: proposal.options)
+                delegate.visit(visitable, on: .modal, with: proposal.options)
             }
         }
     }
@@ -167,9 +162,7 @@ class TurboNavigationHierarchyController {
             navigationController.dismiss(animated: animationsEnabled)
             navigationController.replaceLastViewController(with: controller)
             if let visitable = controller as? Visitable {
-                delegate.visit(visitable,
-                               on: .main,
-                               with: proposal.options)
+                delegate.visit(visitable, on: .main, with: proposal.options)
             }
         case .modal:
             if navigationController.presentedViewController != nil {
@@ -179,9 +172,7 @@ class TurboNavigationHierarchyController {
                 navigationController.present(modalNavigationController, animated: animationsEnabled)
             }
             if let visitable = controller as? Visitable {
-                delegate.visit(visitable,
-                               on: .modal,
-                               with: proposal.options)
+                delegate.visit(visitable, on: .modal, with: proposal.options)
             }
         }
     }
@@ -212,9 +203,7 @@ class TurboNavigationHierarchyController {
         navigationController.setViewControllers([controller], animated: animationsEnabled)
 
         if let visitable = controller as? Visitable {
-            delegate.visit(visitable,
-                           on: .main,
-                           with: .init(action: .replace))
+            delegate.visit(visitable, on: .main, with: .init(action: .replace))
         }
     }
 }
