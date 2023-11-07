@@ -27,6 +27,16 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
         defer { self.webkitUIDelegate = TurboWKUIController(delegate: self) }
     }
 
+    public convenience init(pathConfiguration: PathConfiguration, delegate: TurboNavigatorDelegate? = nil) {
+        let session = Session()
+        session.pathConfiguration = pathConfiguration
+
+        let modalSession = Session()
+        session.pathConfiguration = pathConfiguration
+
+        self.init(session: session, modalSession: modalSession, delegate: delegate)
+    }
+
     /// Transforms `URL` -> `VisitProposal` -> `UIViewController`.
     /// Given the `VisitProposal`'s properties, push or present this view controller.
     ///
