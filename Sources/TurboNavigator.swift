@@ -30,6 +30,8 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
 
         self.session.delegate = self
         self.modalSession.delegate = self
+
+        defer { self.webkitUIDelegate = TurboWKUIController(delegate: self) }
     }
     
     /// Transforms `URL` -> `VisitProposal` -> `UIViewController`.
