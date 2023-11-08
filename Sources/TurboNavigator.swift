@@ -4,11 +4,16 @@ import Turbo
 import UIKit
 import WebKit
 
+class DefaultTurboNavigatorDelegate: NSObject, TurboNavigatorDelegate {}
+
 public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
     public unowned var delegate: TurboNavigatorDelegate
 
     public var rootViewController: UINavigationController { hierarchyController.navigationController }
 
+    /// Set to handle customize behavior of the `WKUIDelegate`.
+    /// Subclass `TurboWKUIController` to add additional behavior alongside alert/confirm dialogs.
+    /// Or, provide a completely custom `WKUIDelegate` implementation.
     public var webkitUIDelegate: TurboWKUIController? {
         didSet {
             session.webView.uiDelegate = webkitUIDelegate
@@ -16,23 +21,34 @@ public class TurboNavigator: TurboNavigationHierarchyControllerDelegate {
         }
     }
 
+    /// Default initializer requiring preconfigured `Session` instances.
+    /// User `init(pathConfiguration:delegate)` to only provide a `PathConfiguration`.
+    /// - Parameters:
+    ///   - session: the main `Session`
+    ///   - modalSession: the `Session` used for the modal navigation controller
+    ///   - delegate: an optional delegate to handle custom view controllers
     public init(session: Session, modalSession: Session, delegate: TurboNavigatorDelegate? = nil) {
         self.session = session
         self.modalSession = modalSession
-        
+
         self.delegate = delegate ?? navigatorDelegate
 
         self.session.delegate = self
         self.modalSession.delegate = self
 
+        // Defer to trigger didSet callback.
         defer { self.webkitUIDelegate = TurboWKUIController(delegate: self) }
     }
 
+    /// Convenience initializer that doesn't require manually creating `Session` instances.
+    /// - Parameters:
+    ///   - pathConfiguration:
+    ///   - delegate: an optional delegate to handle custom view controllers
     public convenience init(pathConfiguration: PathConfiguration, delegate: TurboNavigatorDelegate? = nil) {
-        let session = Session()
+        let session = Session(webView: TurboConfig.shared.makeWebView())
         session.pathConfiguration = pathConfiguration
 
-        let modalSession = Session()
+        let modalSession = Session(webView: TurboConfig.shared.makeWebView())
         session.pathConfiguration = pathConfiguration
 
         self.init(session: session, modalSession: modalSession, delegate: delegate)

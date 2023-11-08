@@ -1,22 +1,23 @@
 import Foundation
 import WebKit
 
-public protocol TurboWKUIDelegate : AnyObject {
+public protocol TurboWKUIDelegate: AnyObject {
     func present(_ alert: UIAlertController, animated: Bool)
 }
 
-public class TurboWKUIController : NSObject, WKUIDelegate {
-    weak var delegate: TurboWKUIDelegate?
-    init(delegate: TurboWKUIDelegate!) {
+open class TurboWKUIController: NSObject, WKUIDelegate {
+    private unowned var delegate: TurboWKUIDelegate
+
+    public init(delegate: TurboWKUIDelegate!) {
         self.delegate = delegate
     }
-    
+
     open func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
         let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
             completionHandler()
         })
-        delegate?.present(alert, animated: true)
+        delegate.present(alert, animated: true)
     }
 
     open func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
@@ -27,6 +28,6 @@ public class TurboWKUIController : NSObject, WKUIDelegate {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
             completionHandler(false)
         })
-        delegate?.present(alert, animated: true)
+        delegate.present(alert, animated: true)
     }
 }
