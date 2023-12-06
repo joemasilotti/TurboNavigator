@@ -274,7 +274,7 @@ class MyCustomClass: TurboNavigationDelegate {
     func handle(proposal: VisitProposal) -> ProposalResult {
         if proposal.viewController == NumbersViewController.pathConfigurationIdentifier {
             // Let Turbo Navigator route this custom controller.
-            return NumbersViewController()
+            return .acceptCustom(NumbersViewController())
         } else ... 
             ...
         }
