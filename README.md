@@ -227,7 +227,7 @@ It shows off most of the navigation flows outlined above. There is also an examp
 
 You can also implement an optional method on the `TurboNavigationDelegate` to handle custom routing.
 
-This is useful to break out of the default behavior and/or render a native screen. You may inspect the provided proposal and decide routing based on any of its properties. For custom native screens, you may also include a `"view-controller"` property that will be passed along.
+This is useful to break out of the default behavior and/or render a native screen. You may inspect the provided proposal and decide routing based on any of its properties. For custom native screens, you may also include a `"view-controller"` (or `"view_controller"` or `"viewController"`) property that will be passed along.
 
 ```json
 {

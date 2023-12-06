@@ -39,10 +39,8 @@ public extension VisitProposal {
     ///
     /// A default value is provided in case the view controller property is missing from the configuration file. This will route the default `VisitableViewController`.
     var viewController: String {
-        if let viewController = properties["view-controller"] as? String {
-            return viewController
-        }
+        let viewControllers = ["view-controller", "view_controller", "viewController"].map { properties[$0] }.filter { $0 as? String }
 
-        return VisitableViewController.pathConfigurationIdentifier
+        return viewControllers.first || VisitableViewController.pathConfigurationIdentifier
     }
 }
