@@ -247,7 +247,7 @@ class MyCustomClass: TurboNavigationDelegate {
     func handle(proposal: VisitProposal) -> ProposalResult {
         if proposal.viewController == "numbers" {
             // Let Turbo Navigator route this custom controller.
-            return NumbersViewController()
+            return .acceptCustom(NumbersViewController())
         } else if proposal.presentation == .clearAll {
             // Return nil to tell Turbo Navigator stop processing the request.
             return nil

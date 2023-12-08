@@ -4,14 +4,14 @@ import UIKit
 import WebKit
 
 /// Handles navigation to new URLs using the following rules:
-/// https://github.com/joemasilotti/TurboNavigator#handled-flows
+/// [Turbo Navigator Handled Flows](https://github.com/joemasilotti/TurboNavigator#handled-flows)
 public class TurboNavigator {
     /// Default initializer.
     /// - Parameters:
     ///   - delegate: handle custom controller routing
     ///   - pathConfiguration: assigned to internal `Session` instances for custom configuration
-    ///   - navigationController: optional: override the main navigation stack
-    ///   - modalNavigationController: optional: override the modal navigation stack
+    ///   - navigationController: _optional:_ override the main navigation stack
+    ///   - modalNavigationController: _optional:_ override the modal navigation stack
     public init(delegate: TurboNavigationDelegate,
                 pathConfiguration: PathConfiguration? = nil,
                 navigationController: UINavigationController = UINavigationController(),
@@ -30,13 +30,15 @@ public class TurboNavigator {
     }
 
     /// Provide `Turbo.Session` instances with preconfigured path configurations and delegates.
-    /// Note that TurboNavigationDelegate.controller(_:forProposal:) will no longer be called.
+    ///
     /// - Parameters:
     ///   - preconfiguredMainSession: a session whose delegate is not `TurboNavigator`
     ///   - preconfiguredModalSession: a session whose delegate is not `TurboNavigator`
     ///   - delegate: handle non-routing behavior, like custom error handling
-    ///   - navigationController: optional: override the main navigation stack
-    ///   - modalNavigationController: optional: override the modal navigation stack
+    ///   - navigationController: _optional:_ override the main navigation stack
+    ///   - modalNavigationController: _optional:_ override the modal navigation stack
+    ///
+    /// - Note: `TurboNavigationDelegate.handle(proposal:)` will no longer be called.
     public init(preconfiguredMainSession: Turbo.Session,
                 preconfiguredModalSession: Turbo.Session,
                 delegate: TurboNavigationDelegate,

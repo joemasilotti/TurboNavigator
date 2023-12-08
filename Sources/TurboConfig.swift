@@ -6,7 +6,7 @@ public class TurboConfig {
     public static let shared = TurboConfig()
 
     /// Override to set a custom user agent.
-    /// Include "Turbo Native" to use `turbo_native_app?` on your Rails server.
+    /// - Important: Include "Turbo Native" to use `turbo_native_app?` on your Rails server.
     public var userAgent = "Turbo Native iOS"
 
     /// Optionally customize the web views used by each Turbo Session.
