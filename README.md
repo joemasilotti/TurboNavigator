@@ -2,8 +2,8 @@
 
 A drop-in class for [Turbo Native](https://github.com/hotwired/turbo-ios) apps to handle common navigation flows.
 
-> [!IMPORTANT]
-> This package is currently being upstreamed into turbo-ios! All future development is happening on the [turbo-navigator branch](https://github.com/hotwired/turbo-ios/pull/158).
+> [!CAUTION]
+> Turbo Navigator has been integrated into [Hotwire Native iOS](https://github.com/hotwired/hotwire-native-ios). This repository will no longer be maintained.
 
 ![Turbo Navigator screenshot demo](.github/images/demo.png)
 
